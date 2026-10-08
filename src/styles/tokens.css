@@ -1,0 +1,76 @@
+/** EasyPM brand tokens mapped from the user-provided Figma stylesheet. */
+:root {
+  --purple-interactive: #A748F3;
+  --purple-primary: #8648E7;
+  --purple-secondary: #6E51D9;
+  --neutral-tertiary: #3A3A3A;
+  --neutral-dark: #292929;
+  --neutral-white: #FAFAFA;
+  --purple-deep: #49329A;
+  --purple-soft: #F3ECFC;
+  --purple-pale: #F8F5FC;
+  --line: rgba(41, 41, 41, 0.14);
+  --line-strong: rgba(41, 41, 41, 0.26);
+  --shadow-card: 0 8px 24px rgba(41, 41, 41, 0.08);
+  --shadow-elev: 0 18px 46px rgba(41, 41, 41, 0.14);
+
+  --radius-sm: 8px;
+  --radius: 14px;
+  --radius-lg: 24px;
+  --radius-pill: 999px;
+
+  --font-heading: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-body: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+  /* Shared-section aliases retained for compatibility with the starter. */
+  --blue-primary: var(--purple-primary);
+  --blue-deep: var(--purple-deep);
+  --blue-darker: #352269;
+  --blue-accent: var(--purple-interactive);
+  --blue-hover: var(--purple-secondary);
+  --btn-1: var(--purple-primary);
+  --btn-1-hover: var(--purple-secondary);
+  --btn-2: var(--purple-secondary);
+  --btn-2-hover: var(--purple-deep);
+  --ink-black: var(--neutral-dark);
+  --ink-soft: var(--neutral-tertiary);
+  --surface-white: #FFFFFF;
+  --surface-soft-blue: var(--purple-pale);
+  --surface-mute: #EEEAF3;
+  --warm-white: var(--neutral-white);
+  --sand-pale: var(--purple-soft);
+  --surface-soft-green: var(--purple-pale);
+  --surface-sage: var(--purple-soft);
+  --emergency: var(--purple-primary);
+  --emergency-text: var(--purple-deep);
+  --heat-orange: var(--purple-secondary);
+  --brand-gold: var(--purple-interactive);
+  --color-primary: var(--purple-primary);
+  --color-primary-dark: var(--purple-deep);
+  --color-secondary: var(--purple-secondary);
+  --color-accent: var(--purple-interactive);
+  --color-surface: var(--neutral-white);
+  --color-panel: #FFFFFF;
+  --color-border: var(--line);
+  --color-text: var(--neutral-tertiary);
+  --color-text-strong: var(--neutral-dark);
+  --color-text-muted: #5F5B62;
+  --green-primary: var(--purple-primary);
+  --green-deep: var(--purple-deep);
+  --green-darker: #352269;
+  --green-olive: var(--purple-secondary);
+  --green-bio: var(--purple-primary);
+  --green-hover: var(--purple-secondary);
+  --sand: var(--surface-mute);
+  --sand-deep: #D8D1E2;
+  --surface-tint: var(--purple-pale);
+  --surface-mint: var(--purple-soft);
+}
+
+/* Figma heading scale. Responsive sizes use its mobile specification. */
+h1, .hero-v5-h1 { font-size: clamp(2.5rem, 5vw, 3.5rem); line-height: 1.12; }
+h2 { font-size: clamp(2.25rem, 4vw, 3rem); line-height: 1.16; }
+h3 { font-size: clamp(2rem, 3.4vw, 2.5rem); line-height: 1.18; }
+h4 { font-size: clamp(1.5rem, 2.8vw, 2rem); line-height: 1.2; }
+h5 { font-size: clamp(1.25rem, 2.2vw, 1.5rem); line-height: 1.2; }
+h6 { font-size: clamp(1.125rem, 1.8vw, 1.25rem); line-height: 1.2; }

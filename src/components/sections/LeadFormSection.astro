@@ -1,0 +1,753 @@
+---
+/**
+ * LeadFormSection — v5-modern rebuild.
+ *
+ * Same Sanity props (title, subtitle, body, backgroundTheme, logo, alignment),
+ * now honoring configured form fields/messages with a standard fallback.
+ *
+ * Visual changes:
+ *   - Section uses .bbg-section padding and brand surfaces
+ *   - Centered head (eyebrow + h2 matching the rest of the design system)
+ *   - Form card is properly proportioned: rounded-32, bigger padding,
+ *     soft brand shadow, real visible labels
+ *   - Logo bumped from 64px max-height to 120px so it has presence
+ *   - Submit is now a full-width primary button (.btn-primary big enough
+ *     to be a real CTA, not a small oval)
+ *   - All inputs share consistent radius, padding, focus ring
+ */
+import type { LeadFormField, LeadFormSection } from '../../types/sections';
+import { siteProfile } from '../../data/siteProfile';
+import { portableTextToHtml } from '../../lib/portableText';
+import { buildSanityImageUrl, optimizeImageUrl } from '../../lib/imageOptimizer';
+import { splitHighlight } from '../../utils/highlightTitle';
+
+const props = Astro.props as LeadFormSection;
+const HeadingTag = props.headingLevel === 'h1' ? 'h1' : 'h2';
+const titleSegments = props.title ? splitHighlight(props.title, (props as any).highlightText) : [];
+
+const rawBackgroundTheme = props.backgroundTheme ?? 'cream';
+const backgroundTheme =
+  (
+    {
+      blue: 'oliveGreen',
+      darkBlue: 'darkGreen',
+      yellow: 'cream',
+    } as Record<string, string>
+  )[rawBackgroundTheme] ?? rawBackgroundTheme;
+const isDarkSection = backgroundTheme === 'oliveGreen' || backgroundTheme === 'darkGreen';
+
+// Unique-per-instance id so multiple LeadFormSection blocks on the same
+// page (e.g. inline form + bottom CTA form) don't collide on the
+// `contact_form` id — duplicate ids are invalid HTML and break the JS
+// submit interception below. The shared `data-contact-form` attribute
+// lets the script find every instance with one selector.
+const formId = `contact_form_${Math.random().toString(36).slice(2, 9)}`;
+const defaultAction = '/api/contact';
+const safeFormAction = props.formAction?.startsWith('/') ? props.formAction : defaultAction;
+const bodyHtml = props.body ? portableTextToHtml(props.body) : '';
+const successMessage = props.successMessage ?? '';
+const errorMessage = props.errorMessage ?? '';
+const formFields = Array.isArray(props.fields) ? props.fields : [];
+const formIsAvailable = Boolean(
+  (process.env.AUTOMATION_WEBHOOK_URL || process.env.PUBLIC_AUTOMATION_WEBHOOK_URL) &&
+  formFields.length > 0
+);
+const showConfiguredForm = formFields.length > 0;
+const phoneHref = `tel:+${siteProfile.primaryPhoneE164NoPlus}`;
+const figmaContact = props.visualVariant === 'figmaContact';
+const contactPhone = props.contactPhone?.trim();
+const contactDigits = contactPhone?.replace(/\D/g, '') ?? '';
+const contactPhoneHref = contactDigits.length === 10 ? `tel:+1${contactDigits}` : contactDigits.length === 11 && contactDigits.startsWith('1') ? `tel:+${contactDigits}` : phoneHref;
+const formArtLeft = props.backgroundArtLeft ? buildSanityImageUrl(props.backgroundArtLeft, { width: 1878, format: 'webp', quality: 78 }) : '';
+const formArtRight = props.backgroundArtRight ? buildSanityImageUrl(props.backgroundArtRight, { width: 844, format: 'webp', quality: 78 }) : '';
+const fieldRows = formFields.reduce<LeadFormField[][]>((rows, field) => {
+  const normalizedField = { ...field, width: field.width ?? 'full' };
+  const lastRow = rows[rows.length - 1];
+  if (normalizedField.width === 'half' && lastRow && lastRow.length === 1 && lastRow[0].width === 'half') {
+    lastRow.push(normalizedField);
+  } else {
+    rows.push([normalizedField]);
+  }
+  return rows;
+}, []);
+
+// Cloudflare Turnstile site key. Public by design (it identifies the
+// widget config to Cloudflare); the SECRET key lives server-side only
+// and is read in src/pages/api/contact.ts. If the site key is missing
+// or still the placeholder we skip rendering the widget and let the
+// form submit normally — so a misconfigured deploy never blocks leads.
+const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
+const turnstileEnabled =
+  typeof turnstileSiteKey === 'string' &&
+  turnstileSiteKey.length > 0 &&
+  !turnstileSiteKey.startsWith('__PASTE_');
+---
+
+<section class={`bbg-section bbg-form ${isDarkSection ? 'bbg-form-dark' : backgroundTheme === 'cream' ? 'bbg-form-cream' : 'bbg-form-light'} ${figmaContact ? 'bbg-form-figma' : ''}`} id="contact_form" style={figmaContact ? `--bbg-form-art-left:url("${formArtLeft}");--bbg-form-art-right:url("${formArtRight}")` : undefined}>
+  <div class="bbg-wrap">
+    {(props.title || props.subtitle || bodyHtml) && (
+      <div class="bbg-form-head">
+        {props.eyebrow && <span class="bbg-form-eyebrow">
+          <span class="bbg-form-eyebrow-dot" aria-hidden="true"></span>
+          {props.eyebrow}
+        </span>}
+        {props.title && (
+          <HeadingTag class="bbg-form-title">
+            {titleSegments.map((segment) =>
+              segment.highlight ? (
+                <span class="bbg-form-leaf">{segment.text}</span>
+              ) : (
+                <span>{segment.text}</span>
+              )
+            )}
+          </HeadingTag>
+        )}
+        {props.subtitle && <p class="bbg-form-sub">{props.subtitle}</p>}
+        {bodyHtml && <div class="bbg-form-body" set:html={bodyHtml} />}
+        {figmaContact && (contactPhone || props.serviceArea) && (
+          <div class="bbg-form-contact-details" aria-label="EasyPM contact details">
+            {contactPhone && <a class="bbg-form-contact-detail" href={contactPhoneHref}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2A19.8 19.8 0 0 1 11.2 18a19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 3.2 2 2 0 0 1 4.1 1h3a2 2 0 0 1 2 1.7l.6 3a2 2 0 0 1-.6 1.9L7.5 9a16 16 0 0 0 7.5 7.5l1.4-1.6a2 2 0 0 1 1.9-.6l3 .6a2 2 0 0 1 1.7 2Z" /></svg>
+              <span><small>Call EasyPM</small><strong>{contactPhone}</strong></span>
+            </a>}
+            {props.serviceArea && <div class="bbg-form-contact-detail">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0Z" /><circle cx="12" cy="10" r="2.5" /></svg>
+              <span><small>Service area</small><strong>{props.serviceArea}</strong></span>
+            </div>}
+          </div>
+        )}
+      </div>
+    )}
+
+    <div class="bbg-form-card">
+      {showConfiguredForm ? (
+      <>
+      {props.logo?.url && (
+        <div class="bbg-form-logo">
+          <img
+            src={optimizeImageUrl(props.logo.url, { width: 360, height: 0, fit: 'scale' })}
+            alt={props.logo.alt ?? siteProfile.brandName}
+            width={180}
+            height={120}
+            loading="lazy"
+            decoding="async"
+          />
+        </div>
+      )}
+
+      <form
+        id={formId}
+        data-contact-form
+        method="post"
+        action={safeFormAction}
+        class="bbg-form-grid"
+        data-preview-disabled={!formIsAvailable ? 'true' : undefined}
+      >
+        <input type="hidden" name="formTitle" value={props.title ?? 'Contact Form'} />
+
+        {fieldRows.map((row) => (
+          <div class={row.length > 1 ? 'bbg-form-row' : 'bbg-form-single-row'}>
+            {row.map((field) => {
+              const fieldId = `${formId}_${field.name}`;
+              const required = field.required !== false;
+              return (
+                <div class="bbg-form-field">
+                  <label for={fieldId}>{field.label}</label>
+                  {field.type === 'textarea' ? (
+                    <textarea
+                      id={fieldId}
+                      name={field.name}
+                      placeholder={field.placeholder}
+                      rows={field.rows ?? 4}
+                      required={required}
+                      aria-required={required}
+                      disabled={!formIsAvailable}
+                    ></textarea>
+                  ) : field.type === 'select' ? (
+                    <div class="bbg-form-select-wrap">
+                      <select id={fieldId} name={field.name} required={required} aria-required={required} disabled={!formIsAvailable}>
+                        <option value="">{field.placeholder || `Select ${field.label.toLowerCase()}`}</option>
+                        {field.options?.map((option) => (
+                          <option value={option.value}>{option.label}</option>
+                        ))}
+                      </select>
+                      <svg class="bbg-form-select-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M6 9l6 6 6-6" />
+                      </svg>
+                    </div>
+                  ) : field.type === 'checkboxGroup' ? (
+                    <div class="bbg-form-checkbox-group">
+                      {field.options?.map((option, index) => (
+                        <label class="bbg-form-checkbox" for={`${fieldId}_${index}`}>
+                          <input
+                            id={`${fieldId}_${index}`}
+                            type="checkbox"
+                            name={field.name}
+                            value={option.value}
+                            disabled={!formIsAvailable}
+                          />
+                          <span>{option.label}</span>
+                        </label>
+                      ))}
+                    </div>
+                  ) : (
+                    <input
+                      type={field.type || 'text'}
+                      id={fieldId}
+                      name={field.name}
+                      placeholder={field.placeholder}
+                      required={required}
+                      aria-required={required}
+                      disabled={!formIsAvailable}
+                    />
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        ))}
+
+        {turnstileEnabled && formIsAvailable && (
+          <div class="bbg-form-turnstile-wrap">
+            {/*
+              Cloudflare Turnstile widget. On render, Cloudflare injects
+              a hidden input named `cf-turnstile-response` into THIS form
+              with the token value. Our submit handler reads that token
+              from the FormData and POSTs it to /api/contact, which
+              validates it server-side with TURNSTILE_SECRET_KEY before
+              forwarding the lead to n8n.
+            */}
+            <div
+              class="cf-turnstile bbg-form-turnstile"
+              data-sitekey={turnstileSiteKey}
+              data-theme={isDarkSection ? 'dark' : 'light'}
+              data-size="flexible"
+            ></div>
+          </div>
+        )}
+
+        <div
+          class="bbg-form-status"
+          aria-live="polite"
+        ></div>
+
+        <button
+          type="submit"
+          class="btn-primary bbg-form-submit"
+          data-role="submit-btn"
+          disabled={!formIsAvailable}
+        >
+          <span data-default-label>{!formIsAvailable ? 'Form delivery is not configured' : props.submitLabel}</span>
+          <span data-loading-label class="bbg-form-loading">Sending&hellip;</span>
+          <svg viewBox="0 0 24 24" class="bbg-form-arrow" aria-hidden="true">
+            <path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </button>
+
+      </form>
+      {!formIsAvailable && <p class="bbg-form-preview-note">Online inquiries are not available yet. Call <a href={phoneHref}>{siteProfile.primaryPhoneFormatted}</a> to reach EasyPM.</p>}
+      </>
+      ) : (
+        <div class="bbg-form-phone-fallback">
+          <a href={phoneHref} class="btn-primary">Call {siteProfile.primaryPhoneFormatted}</a>
+        </div>
+      )}
+    </div>
+  </div>
+</section>
+
+{/*
+  Load Turnstile API once per page. The `defer` keeps it off the
+  critical path; the script auto-discovers every .cf-turnstile element
+  on DOMContentLoaded and renders the widgets. If the script is already
+  on the page (multiple LeadFormSection instances), the duplicate
+  The duplicate Cloudflare script is a no-op because its loader is idempotent.
+*/}
+{turnstileEnabled && formIsAvailable && (
+  <script
+    is:inline
+    src="https://challenges.cloudflare.com/turnstile/v0/api.js"
+    defer
+  ></script>
+)}
+
+<style>
+  .bbg-form-light { background: var(--warm-white); }
+  .bbg-form-cream { background: var(--sand-pale); }
+  .bbg-form-dark  { background: var(--green-deep); color: var(--warm-white); }
+
+  /* === Head ======================================================== */
+  .bbg-form-head {
+    text-align: center;
+    max-width: 720px;
+    margin: 0 auto 48px;
+  }
+
+  @media (max-width: 720px) {
+    .bbg-form-head { margin-bottom: 32px; }
+  }
+
+  .bbg-form-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    /* --emergency (#C84545) only hits ~4.3:1 on warm-white at 12px so
+       Lighthouse flagged the form eyebrow. --emergency-text (#A82929)
+       is the AA-safe red token reserved exactly for this case (~6.2:1
+       on cream, ~7.4:1 on white). */
+    color: var(--emergency-text);
+    margin-bottom: 18px;
+  }
+
+  .bbg-form-dark .bbg-form-eyebrow { color: var(--sand-pale); }
+
+  .bbg-form-eyebrow-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--emergency);
+    box-shadow: 0 0 0 3px rgba(202, 30, 53, 0.18);
+  }
+
+  .bbg-form-title {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: clamp(32px, 4.5vw, 52px);
+    line-height: 1.05;
+    letter-spacing: -0.025em;
+    color: var(--ink-black);
+    text-wrap: balance;
+    margin: 0;
+  }
+
+  .bbg-form-dark .bbg-form-title { color: var(--warm-white); }
+
+  /* Unified highlight — red italic on light, sand-pale italic on dark. */
+  .bbg-form-leaf {
+    display: inline-block;
+    color: var(--emergency);
+    font-style: italic;
+    padding-right: 0.05em;
+  }
+  .bbg-form-dark .bbg-form-leaf {
+    color: var(--sand-pale);
+  }
+
+  .bbg-form-sub {
+    font-family: var(--font-body);
+    font-size: 17px;
+    line-height: 1.65;
+    color: var(--ink-soft);
+    margin: 16px 0 0;
+  }
+
+  .bbg-form-dark .bbg-form-sub { color: rgba(247, 245, 241, 0.92); }
+
+  .bbg-form-body {
+    margin-top: 16px;
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.65;
+    color: var(--ink-soft);
+  }
+
+  .bbg-form-dark .bbg-form-body { color: rgba(247, 245, 241, 0.92); }
+
+  /* === Form card ==================================================== */
+  .bbg-form-card {
+    max-width: 760px;
+    margin: 0 auto;
+    background: var(--warm-white);
+    border-radius: 28px;
+    padding: 48px 48px 40px;
+    border: 1px solid rgba(29, 29, 29, 0.06);
+    box-shadow:
+      0 1px 0 rgba(29, 29, 29, 0.02),
+      0 40px 80px -32px rgba(29, 29, 29, 0.22);
+  }
+
+  @media (max-width: 720px) {
+    .bbg-form-card {
+      padding: 32px 24px 28px;
+      border-radius: 22px;
+    }
+  }
+
+  /* === Logo (much bigger now) ====================================== */
+  .bbg-form-logo {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 36px;
+  }
+
+  .bbg-form-logo img {
+    width: auto;
+    height: auto;
+    max-height: 120px;
+    max-width: 240px;
+    object-fit: contain;
+  }
+
+  @media (max-width: 720px) {
+    .bbg-form-logo {
+      margin-bottom: 24px;
+    }
+    .bbg-form-logo img {
+      max-height: 88px;
+      max-width: 200px;
+    }
+  }
+
+  /* === Form grid + rows ============================================ */
+  .bbg-form-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .bbg-form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+  }
+
+  .bbg-form-single-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  @media (max-width: 600px) {
+    .bbg-form-row { grid-template-columns: 1fr; }
+  }
+
+  /* === Field label + input ========================================= */
+  .bbg-form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .bbg-form-field label {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+
+  .bbg-form-field input,
+  .bbg-form-field textarea,
+  .bbg-form-field select {
+    width: 100%;
+    font-family: var(--font-body);
+    font-size: 15px;
+    color: var(--ink-black);
+    background: var(--warm-white);
+    border: 1.5px solid rgba(29, 29, 29, 0.12);
+    border-radius: 14px;
+    padding: 14px 16px;
+    transition:
+      border-color 180ms ease,
+      box-shadow 180ms ease,
+      background 180ms ease;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  .bbg-form-field input::placeholder,
+  .bbg-form-field textarea::placeholder {
+    color: rgba(29, 29, 29, 0.42);
+  }
+
+  .bbg-form-field input:disabled,
+  .bbg-form-field textarea:disabled,
+  .bbg-form-field select:disabled {
+    color: rgba(29, 29, 29, 0.68);
+    background: rgba(29, 29, 29, 0.035);
+    cursor: not-allowed;
+  }
+
+  .bbg-form-field input:hover,
+  .bbg-form-field textarea:hover,
+  .bbg-form-field select:hover {
+    border-color: rgba(94, 127, 58, 0.45);
+  }
+
+  .bbg-form-field input:focus,
+  .bbg-form-field textarea:focus,
+  .bbg-form-field select:focus {
+    outline: none;
+    border-color: var(--green-deep);
+    box-shadow: 0 0 0 4px rgba(94, 127, 58, 0.16);
+  }
+
+  .bbg-form-field textarea {
+    resize: vertical;
+    min-height: 110px;
+    font-family: var(--font-body);
+  }
+
+  .bbg-form-checkbox-group {
+    display: grid;
+    gap: 10px;
+    padding: 10px 0 2px;
+  }
+
+  .bbg-form-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-body);
+    font-size: 14px;
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--ink-soft);
+  }
+
+  .bbg-form-checkbox input {
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    accent-color: var(--green-deep);
+  }
+
+  /* === Custom select chevron ======================================= */
+  .bbg-form-select-wrap {
+    position: relative;
+  }
+
+  .bbg-form-select-wrap select {
+    padding-right: 44px;
+  }
+
+  .bbg-form-select-chev {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 18px;
+    height: 18px;
+    color: var(--ink-soft);
+    pointer-events: none;
+  }
+
+  /* === Status / submit / fineprint ================================== */
+  .bbg-form-status {
+    min-height: 0;
+    text-align: center;
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 14px;
+  }
+
+  .bbg-form-status.is-success { color: var(--green-deep); padding: 8px 0; }
+  .bbg-form-status.is-error   { color: var(--emergency); padding: 8px 0; }
+
+  .bbg-form-submit {
+    align-self: stretch;
+    width: 100%;
+    min-height: 60px;
+    font-size: 15px;
+    margin-top: 8px;
+  }
+
+  .bbg-form-arrow {
+    width: 16px;
+    height: 16px;
+    transition: transform 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  .bbg-form-submit:hover .bbg-form-arrow,
+  .bbg-form-submit:focus-visible .bbg-form-arrow {
+    transform: translateX(3px);
+  }
+
+  .bbg-form-loading {
+    display: none;
+  }
+
+  .bbg-form-submit[data-loading="true"] [data-default-label],
+  .bbg-form-submit[data-loading="true"] .bbg-form-arrow {
+    display: none;
+  }
+
+  .bbg-form-submit[data-loading="true"] .bbg-form-loading {
+    display: inline;
+  }
+
+  .bbg-form-submit[disabled] {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+
+  .bbg-form-preview-note {
+    margin: 14px 0 0;
+    color: var(--ink-soft);
+    font-size: 14px;
+    line-height: 1.5;
+    text-align: center;
+  }
+
+  .bbg-form-preview-note a { color: var(--green-deep); font-weight: 700; text-decoration: underline; }
+
+  /* Cloudflare Turnstile wrapper — keeps the widget on its own row and
+     gives it breathing room above the submit button. The widget itself
+     comes in two sizes; data-size="flexible" makes it stretch to its
+     parent's width on mobile and stay compact on desktop. */
+  .bbg-form-turnstile-wrap {
+    display: flex;
+    justify-content: center;
+    min-height: 65px;
+  }
+
+  .bbg-form-turnstile {
+    width: 100%;
+    max-width: 300px;
+  }
+
+  .bbg-form-fineprint {
+    text-align: center;
+    font-family: var(--font-body);
+    font-size: 12px;
+    color: var(--ink-soft);
+    margin: 0;
+    padding-top: 4px;
+  }
+
+  /* Contact Frame Desktop: a square purple outline on a pale ground,
+     with the heading and contact details inside the same form panel. */
+  .bbg-form-figma { background-color: #f7f7f7; background-image: var(--bbg-form-art-left), var(--bbg-form-art-right); background-position: left center, right center; background-size: min(100%, 1878px) auto, min(44vw, 844px) auto; background-repeat: no-repeat; }
+  .bbg-form-figma .bbg-wrap {
+    width: min(100% - 40px, 860px);
+    background: #fff;
+    border: 2px solid #8051dc;
+    border-radius: 7px;
+    box-shadow: 10px 12px 0 rgba(41, 41, 41, .2);
+    padding: clamp(28px, 4vw, 64px);
+  }
+  .bbg-form-figma .bbg-form-head { margin-bottom: 32px; }
+  .bbg-form-figma .bbg-form-eyebrow { color: #6b39c2; }
+  .bbg-form-figma .bbg-form-eyebrow-dot { background: #8051dc; box-shadow: 0 0 0 3px #8051dc25; }
+  .bbg-form-figma .bbg-form-title { color: #6b39c2; font-size: clamp(29px, 3vw, 42px); line-height: 1.16; }
+  .bbg-form-figma .bbg-form-sub { margin-top: 12px; }
+  .bbg-form-figma .bbg-form-card { max-width: none; border: 0; border-radius: 0; box-shadow: none; padding: 0; }
+  .bbg-form-contact-details { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 24px; text-align: left; }
+  .bbg-form-contact-detail { display: flex; align-items: center; gap: 11px; min-height: 74px; padding: 13px 15px; border: 1px solid #c7adfa; border-radius: 8px; color: #392b54; background: #faf8ff; text-decoration: none; }
+  .bbg-form-contact-detail svg { flex: 0 0 23px; width: 23px; height: 23px; color: #7440d1; }
+  .bbg-form-contact-detail span { display: grid; gap: 2px; min-width: 0; }
+  .bbg-form-contact-detail small { color: #5a4a70; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; }
+  .bbg-form-contact-detail strong { color: #392b54; font-size: 14px; line-height: 1.3; overflow-wrap: anywhere; }
+  .bbg-form-contact-detail:is(a):hover { border-color: #6b39c2; background: #f3edff; }
+  .bbg-form-contact-detail:is(a):focus-visible { outline: 3px solid #6b39c2; outline-offset: 3px; }
+  .bbg-form-figma .bbg-form-field label { color: #4b3a62; }
+  .bbg-form-figma .bbg-form-field input,
+  .bbg-form-figma .bbg-form-field select,
+  .bbg-form-figma .bbg-form-field textarea { border: 1px solid #9c6de9; border-radius: 7px; background: #fff; }
+  .bbg-form-figma .bbg-form-field :is(input, select, textarea):focus { border-color: #6b39c2; box-shadow: 0 0 0 3px #8051dc35; }
+  .bbg-form-figma .bbg-form-submit { justify-self: start; align-self: flex-start; width: auto; min-width: 175px; min-height: 48px; border-radius: 7px; background: #7440d1; }
+  .bbg-form-figma .bbg-form-submit:hover { background: #5c2cb5; }
+  @media (max-width: 600px) {
+    .bbg-form-figma { background-size: 130% auto, 76% auto; background-position: left top, right bottom; }
+    .bbg-form-figma .bbg-wrap { width: min(100% - 28px, 860px); padding: 28px 20px; }
+    .bbg-form-contact-details { grid-template-columns: 1fr; }
+    .bbg-form-figma .bbg-form-submit { width: 100%; }
+  }
+</style>
+
+<script is:inline define:vars={{ successMessage, errorMessage }}>
+  (() => {
+    // Find every LeadFormSection instance on the page. Using a data-attribute
+    // selector instead of getElementById so multiple forms (e.g. inline form
+    // + bottom CTA form) all get the same JS interception — previously only
+    // the first one was caught and any other form did a native POST that
+    // navigated the browser to /api/contact/ and showed raw JSON.
+    const forms = document.querySelectorAll('form[data-contact-form]');
+    if (!forms.length) return;
+
+    // Guard so this script is idempotent if it's somehow injected twice.
+    forms.forEach((form) => {
+      if (form.dataset.contactFormBound === 'true') return;
+      form.dataset.contactFormBound = 'true';
+
+      // Status + submit elements are scoped to THIS form so the right inline
+      // success/error message updates regardless of how many forms exist.
+      const statusEl = form.querySelector('.bbg-form-status');
+      const submitBtn = form.querySelector('[data-role="submit-btn"]');
+
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const formData = new FormData(form);
+
+        // Cloudflare Turnstile gate. If this form has a widget (.cf-turnstile),
+        // require a valid token before we send anything to /api/contact.
+        // The token is injected by Cloudflare's script as a hidden input
+        // named `cf-turnstile-response`. Missing/empty token = user hasn't
+        // completed the challenge yet (or Turnstile failed to load).
+        const turnstileWidget = form.querySelector('.cf-turnstile');
+        if (turnstileWidget) {
+          const token = formData.get('cf-turnstile-response');
+          if (!token || (typeof token === 'string' && token.length < 10)) {
+            if (statusEl) {
+              statusEl.textContent = 'Please complete the security check above before submitting.';
+              statusEl.className = 'bbg-form-status is-error';
+            }
+            return;
+          }
+        }
+
+        const bodyData = new URLSearchParams();
+        formData.forEach((value, key) => bodyData.append(key, value.toString()));
+
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.setAttribute('data-loading', 'true');
+        }
+        if (statusEl) {
+          statusEl.textContent = '';
+          statusEl.className = 'bbg-form-status';
+        }
+
+        try {
+          const response = await fetch(form.action, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: bodyData.toString()
+          });
+
+          const result = await response.json().catch(() => null);
+          if (response.ok && result?.success === true) {
+            form.reset();
+            // Turnstile tokens are one-shot. Reset the widget so a second
+            // submission from the same page asks for a fresh challenge.
+            if (window.turnstile && turnstileWidget) {
+              try { window.turnstile.reset(turnstileWidget); } catch (e) {}
+            }
+            if (statusEl) {
+              statusEl.textContent = successMessage;
+              statusEl.className = 'bbg-form-status is-success';
+            }
+          } else {
+            throw new Error('Submission failed');
+          }
+        } catch (err) {
+          if (statusEl) {
+            statusEl.textContent = errorMessage;
+            statusEl.className = 'bbg-form-status is-error';
+          }
+        } finally {
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.removeAttribute('data-loading');
+          }
+        }
+      });
+    });
+  })();
+</script>

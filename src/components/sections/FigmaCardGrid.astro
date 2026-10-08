@@ -1,0 +1,105 @@
+---
+import type { ProcessSection } from '../../types/sections';
+import { portableTextToHtml } from '../../lib/portableText';
+import { buildSanityImageUrl, optimizeImageUrl } from '../../lib/imageOptimizer';
+
+const section = Astro.props as ProcessSection;
+const variant = section.visualVariant;
+const isPhoto = variant === 'figmaPhotoCards';
+const isBadge = variant === 'figmaBadgeCards';
+const isDark = section.backgroundTheme === 'darkGreen';
+const columns = section.columns ?? (isBadge ? 4 : 3);
+const imageUrl = (image: NonNullable<ProcessSection['steps'][number]['image']>, width: number) => {
+  const options = isPhoto
+    ? { width, height: Math.round(width * 10 / 16), quality: 78, format: 'webp' as const, fit: 'crop' as const }
+    : { width, quality: 78, format: 'webp' as const, fit: 'max' as const };
+  return buildSanityImageUrl(image, options) ||
+    optimizeImageUrl(image.url || image.asset?.url, options);
+};
+---
+
+<section class:list={['figma-cards', { 'figma-cards-dark': isDark, 'figma-cards-badge': isBadge, 'figma-cards-photo': isPhoto }]}>
+  <div class="figma-cards-inner">
+    {(section.title || section.subtitle) && <header class="figma-cards-heading">
+      {isPhoto && <span class="figma-cards-eyebrow">EasyPM Difference</span>}
+      {section.title && <h2>{section.title}</h2>}
+      {section.subtitle && <p>{section.subtitle}</p>}
+    </header>}
+    <ul class={`figma-cards-grid columns-${columns}`}>
+      {section.steps.map((card) => {
+        const image = card.image;
+        const src = image ? imageUrl(image, isPhoto ? 700 : 280) : '';
+        const supportsResponsiveImage = Boolean(image?.asset?._ref || image?.asset?._id || image?.asset?.url?.includes('cdn.sanity.io') || image?.url?.includes('cdn.sanity.io'));
+        const title = card.label || card.title || '';
+        return <li class="figma-card">
+          {src && <div class="figma-card-media"><img src={src} srcset={image && isPhoto && supportsResponsiveImage ? `${imageUrl(image, 400)} 400w, ${imageUrl(image, 800)} 800w, ${imageUrl(image, 1200)} 1200w` : undefined} sizes={isPhoto && supportsResponsiveImage ? '(max-width: 680px) calc(100vw - 40px), (max-width: 1200px) 32vw, 386px' : undefined} alt={image?.alt || title} width={isPhoto ? 800 : 280} height={isPhoto ? 500 : 280} loading="lazy" decoding="async" /></div>}
+          <div class="figma-card-copy">
+            <h3>{title}</h3>
+            {card.description?.length ? <div class="figma-card-description" set:html={portableTextToHtml(card.description)} /> : null}
+            {isPhoto && <span class="figma-card-arrow" aria-hidden="true">→</span>}
+          </div>
+        </li>;
+      })}
+    </ul>
+  </div>
+</section>
+
+<style>
+  .figma-cards { background: #f7f7f7; color: #252525; padding: clamp(56px, 6vw, 96px) 24px; }
+  .figma-cards-dark { background: #262626; color: #fff; }
+  .figma-cards-badge { background: #e9e9e9; }
+  .figma-cards-inner { width: min(100%, 1200px); margin-inline: auto; }
+  .figma-cards-heading { max-width: 720px; margin: 0 auto 42px; text-align: center; }
+  .figma-cards-heading h2 { margin: 0 0 10px; font: 700 clamp(28px, 3vw, 40px)/1.15 var(--font-heading); }
+  .figma-cards-heading p { margin: 0; font: 400 clamp(15px, 1.25vw, 18px)/1.5 var(--font-body); }
+  .figma-cards-grid { list-style: none; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px; margin: 0; padding: 0; }
+  .figma-cards-grid.columns-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .figma-card { min-width: 0; overflow: hidden; border: 1px solid #e5e7eb; border-radius: 16px; background: #fff; color: #171717; box-shadow: 0 3px 10px #0002; transition: transform 300ms ease-out, box-shadow 300ms ease-out; }
+  .figma-card:is(:hover, :focus-within) { transform: translateY(-4px); box-shadow: 0 16px 32px #0003; }
+  .figma-card-media { display: grid; place-items: center; min-height: 132px; padding: 18px 18px 0; }
+  .figma-card-media img { display: block; width: 112px; height: 112px; object-fit: contain; }
+  .figma-cards-photo { position: relative; isolation: isolate; padding-block: 72px; background: linear-gradient(180deg, #f8f6fc 0%, #fcfbfe 52%, #f5f2fa 100%); }
+  .figma-cards-photo::before { position: absolute; z-index: -1; inset: 0; background: radial-gradient(ellipse 48% 42% at 50% 0%, #eee6ff 0%, transparent 100%); content: ''; pointer-events: none; }
+  .figma-cards-photo.figma-cards-dark { background: #262626; }
+  .figma-cards-photo.figma-cards-dark::before { background: none; }
+  .figma-cards-photo .figma-cards-heading { max-width: 640px; margin-bottom: 48px; }
+  .figma-cards-eyebrow { display: inline-block; margin-bottom: 14px; padding: 7px 15px; border: 1px solid #ded0f8; border-radius: 999px; background: #efe6ff; color: #592caa; font: 700 12px/1.2 var(--font-body); letter-spacing: .11em; text-transform: uppercase; }
+  .figma-cards-photo .figma-cards-heading h2 { margin-bottom: 12px; color: #111827; font-size: clamp(30px, 3vw, 40px); font-weight: 800; letter-spacing: -.035em; }
+  .figma-cards-photo .figma-cards-heading p { color: #4b5563; font-size: clamp(16px, 1.3vw, 18px); }
+  .figma-cards-photo .figma-card { display: flex; flex-direction: column; border-color: #e7e2f0; border-radius: 24px; box-shadow: 0 12px 30px #24163820; transition: transform 300ms ease-out, box-shadow 300ms ease-out, border-color 300ms ease-out; }
+  .figma-cards-photo .figma-card:is(:hover, :focus-within) { transform: translateY(-8px); border-color: #a980e8; box-shadow: 0 24px 48px #24163833; }
+  .figma-cards-photo .figma-card-media { position: relative; display: block; min-height: 0; padding: 0; width: 100%; aspect-ratio: 16 / 10; overflow: hidden; border-radius: 23px 23px 0 0; }
+  .figma-cards-photo .figma-card-media::after { position: absolute; inset: 0; background: linear-gradient(0deg, #09071391 0%, #0907131a 48%, transparent 78%); content: ''; pointer-events: none; }
+  .figma-cards-photo .figma-card-media img { position: absolute; inset: 0; display: block; width: 100%; height: 100%; max-width: none; object-fit: cover; object-position: center; border-radius: 23px 23px 0 0; transition: transform 500ms ease-out; }
+  .figma-cards-photo .figma-card:is(:hover, :focus-within) .figma-card-media img { transform: scale(1.05); }
+  .figma-card-copy { padding: 18px 20px 24px; text-align: center; }
+  .figma-cards-photo .figma-card-copy { display: flex; min-height: 112px; flex: 1; flex-direction: column; align-items: center; justify-content: center; gap: 11px; padding: 20px 24px; border-radius: 0 0 23px 23px; background: #0f172a; color: #fff; text-align: center; }
+  .figma-card h3 { margin: 0 0 9px; font: 700 clamp(17px, 1.55vw, 21px)/1.18 var(--font-heading); }
+  .figma-cards-photo .figma-card h3 { margin: 0; color: #fff; font-weight: 700; font-size: clamp(14px, 1.2vw, 16px); letter-spacing: .08em; line-height: 1.2; text-transform: uppercase; }
+  .figma-cards-photo .figma-card-arrow { display: grid; width: 30px; height: 30px; place-items: center; border: 1px solid #ffffff4d; border-radius: 50%; color: #c4b5fd; font: 700 19px/1 var(--font-body); transition: transform 200ms ease-out, border-color 200ms ease-out; }
+  .figma-cards-photo .figma-card:is(:hover, :focus-within) .figma-card-arrow { transform: translateX(4px); border-color: #c4b5fd; }
+  .figma-cards-photo .figma-card-description { color: #d5d9e3; text-transform: none; }
+  .figma-cards-dark .figma-cards-heading h2 { color: #fff; }
+  .figma-cards-dark .figma-cards-heading p { color: #e5e5e5; }
+  .figma-card-description { font: 400 14px/1.45 var(--font-body); }
+  .figma-card-description :global(p) { margin: 0; }
+  @media (prefers-reduced-motion: reduce) {
+    .figma-card { transition: none; }
+    .figma-card:is(:hover, :focus-within) { transform: none; }
+    .figma-cards-photo .figma-card:is(:hover, :focus-within) { transform: none; }
+    .figma-cards-photo .figma-card-media img { transition: none; }
+    .figma-cards-photo .figma-card:is(:hover, :focus-within) .figma-card-media img { transform: none; }
+    .figma-cards-photo .figma-card-arrow { transition: none; }
+    .figma-cards-photo .figma-card:is(:hover, :focus-within) .figma-card-arrow { transform: none; }
+  }
+  @media (min-width: 1024px) {
+    .figma-cards-photo { padding-block: 96px; }
+    .figma-cards-photo .figma-cards-heading { margin-bottom: 56px; }
+  }
+  @media (max-width: 900px) { .figma-cards-grid.columns-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 680px) {
+    .figma-cards { padding-inline: 20px; }
+    .figma-cards-grid, .figma-cards-grid.columns-4 { grid-template-columns: 1fr; }
+    .figma-cards-badge .figma-card { max-width: 420px; width: 100%; margin-inline: auto; }
+  }
+</style>

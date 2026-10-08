@@ -1,0 +1,79 @@
+---
+export const prerender = false;
+import MainLayout from "../components/layouts/MainLayout.astro";
+import SectionRenderer from "../components/sections/SectionRenderer.astro";
+import { loadPage } from "../lib/pageLoader";
+import type { HeroSection } from "../types/sections";
+import { getYouTubeEmbedUrl } from '../lib/youtube';
+import {
+  getHeroBackgroundUrl,
+  getFigmaCompactHeroBackgroundUrl,
+  getFigmaHeroBackgroundUrl,
+  getHeroImageSrcSet,
+  getHeroSideImageConfig,
+  getHeroSideImageSrcSet,
+  getHeroSideImageUrl,
+} from "../lib/imageOptimizer";
+
+const slugProp = Astro.props?.slug as string | undefined;
+const rawSlugParam = Astro.params.slug;
+const normalizeSlug = (value?: string) => {
+  if (!value) return "";
+  return value.trim().replace(/^\/+/, "").replace(/\/+$/, "");
+};
+const resolvedSlug =
+  slugProp ??
+  (Array.isArray(rawSlugParam)
+    ? normalizeSlug(rawSlugParam.join("/"))
+    : typeof rawSlugParam === "string" && rawSlugParam.length
+      ? normalizeSlug(rawSlugParam)
+      : "home");
+
+const page = await loadPage({ slug: resolvedSlug });
+
+if (!page.sections || page.sections.length === 0) {
+  return new Response("Not Found", { status: 404 });
+}
+
+const heroSection = page.sections.find(
+  (section) => section._type === "heroSection",
+) as HeroSection | undefined;
+
+const heroHasVideo = Boolean(getYouTubeEmbedUrl(heroSection?.videoUrl));
+const heroSource = heroSection?.backgroundImage ?? (heroHasVideo ? undefined : heroSection?.sideImage);
+const heroPreloadUrl = heroSource
+  ? heroSection?.visualVariant === 'figmaHeader'
+    ? heroSection?.bannerSize === 'compact'
+      ? getFigmaCompactHeroBackgroundUrl(heroSource)
+      : getFigmaHeroBackgroundUrl(heroSource)
+    : getHeroBackgroundUrl(
+      heroSource,
+      heroSection?.layoutStyle === "twoColumn" ? "twoColumn" : "singleColumn",
+    )
+  : "";
+const heroPreloadSrcSet = heroSource && heroSection?.visualVariant !== 'figmaHeader' ? getHeroImageSrcSet(heroSource) : "";
+const heroSideImage =
+  heroSection?.layoutStyle === "twoColumn" && !heroHasVideo ? heroSection?.sideImage : undefined;
+const heroMobilePreloadUrl = heroSideImage
+  ? getHeroSideImageUrl(heroSideImage, heroSection?.sideImageSize)
+  : "";
+const heroMobilePreloadSrcSet = heroSideImage
+  ? getHeroSideImageSrcSet(heroSideImage, heroSection?.sideImageSize)
+  : "";
+const heroMobilePreloadSizes = heroSideImage
+  ? getHeroSideImageConfig(heroSection?.sideImageSize).sizes
+  : "";
+---
+
+<MainLayout
+  pageTitle={page.title}
+  description={page.description}
+  canonicalUrl={page.canonicalUrl}
+  heroPreloadUrl={heroPreloadUrl}
+  heroPreloadSrcSet={heroPreloadSrcSet}
+  heroPreloadUrlMobile={heroMobilePreloadUrl}
+  heroPreloadSrcSetMobile={heroMobilePreloadSrcSet}
+  heroPreloadSizesMobile={heroMobilePreloadSizes}
+>
+  <SectionRenderer sections={page.sections} />
+</MainLayout>

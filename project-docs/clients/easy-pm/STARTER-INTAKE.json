@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "projectName": "Easy Pest Management local trial",
+  "projectSlug": "easy-pm",
+  "deliveryTrack": "fresh",
+  "createdAt": "2026-10-07",
+  "inputs": {
+    "brief": true,
+    "references": true,
+    "designSystem": true,
+    "contentArchitecture": true,
+    "infrastructure": false
+  },
+  "selectedVariants": {
+    "hero": "existing shared heroSection variants; match EasyPM reference tokens",
+    "sections": [
+      "heroSection",
+      "serviceGridSection",
+      "twoColTextImageSection",
+      "iconGridSection",
+      "processSection",
+      "ctaSection",
+      "blogListSection",
+      "leadFormSection"
+    ]
+  },
+  "evidence": {
+    "providedByUser": [
+      "EasyPM main navigation page implementation brief",
+      "EasyPM Main Website Copy Draft dated 5 October 2026 at /Users/FFS/Downloads/easypm-main-pages-draft.md",
+      "Figma design reference https://www.figma.com/design/iRqswWfFaddIiE7s59z2Pu/EasyPM?node-id=0-1",
+      "User clarification: this is a local trial website and easypm.com is a reference only, not the target site or a migration",
+      "User supplied desktop PNG exports for Home, Bed Bug Control, Cockroach Control, Termite Control, Service Area, About, and Contact frames",
+      "Latest user directive explicitly expands scope to Bed Bug, Cockroach, and Termite service subpages"
+    ],
+    "projectSlugSource": "Reused from an earlier EasyPM project intake in the user's workspace.",
+    "targetRoutes": [
+      "/",
+      "/services/",
+      "/services/bed-bug-control/",
+      "/services/cockroach-control/",
+      "/services/termite-control/",
+      "/service-area/",
+      "/about-us/",
+      "/blog/",
+      "/contact/"
+    ],
+    "componentMap": {
+      "Home": ["heroSection", "serviceGridSection", "twoColTextImageSection", "ctaSection", "twoColTextImageSection", "processSection", "processSection"],
+      "Our Services": ["heroSection", "serviceGridSection", "twoColTextImageSection"],
+      "Bed Bug Control": ["heroSection", "iconGridSection", "processSection", "ctaSection", "processSection", "twoColTextImageSection"],
+      "Cockroach Control": ["heroSection", "ctaSection", "processSection", "processSection", "twoColTextImageSection"],
+      "Termite Control": ["heroSection", "processSection", "ctaSection", "twoColTextImageSection", "twoColTextImageSection"],
+      "Service Area": ["heroSection", "ctaSection", "twoColTextImageSection", "processSection"],
+      "About Us": ["heroSection", "ctaSection", "twoColTextImageSection", "processSection", "processSection"],
+      "Blog": ["heroSection", "serviceGridSection", "blogListSection"],
+      "Contact": ["leadFormSection"]
+    },
+    "confirmedPhone": {
+      "display": "267-440-7306",
+      "href": "tel:+12674407306"
+    },
+    "openItems": [
+      "Form destination is not configured; the form stays disabled and the phone route is the active lead path.",
+      "The Cockroach and Termite screenshots show layout, but isolated pest art, section photos, and process/badge icons have not been supplied.",
+      "Figma has no dedicated Blog hero frame. Blog reuses verified Home artwork. See ASSET-MANIFEST.md.",
+      "The Figma logo and some icons are raster layers, so they cannot become true currentColor vector paths without new source artwork.",
+      "The Home banner raster source is 1920 pixels wide and cannot be claimed as a true 2x source.",
+      "A current visual overlay and Lighthouse accessibility audit have not been completed.",
+      "The copy is a first draft for a local review build and is not approved for publication."
+    ],
+    "workflowNote": "The local trial uses Sanity project mrdn8wqq, dataset production. All nine documents and navigation were synced on 2026-10-08 and read back. The local server on port 4323 uses the published CMS with PUBLIC_EASYPM_LOCAL_PREVIEW disabled. The live easypm.com website is a content reference only; this trial is not deployed."
+  },
+  "secretHandling": "Do not record API tokens, credentials, or private keys in this file."
+}
