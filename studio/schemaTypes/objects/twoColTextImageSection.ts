@@ -1,5 +1,5 @@
 import { LuColumns3 } from 'react-icons/lu';
-import { defineArrayMember, defineField, defineType, type Rule } from 'sanity';
+import { defineArrayMember, defineField, defineType } from 'sanity';
 
 export const twoColTextImageSection = defineType({
   name: 'twoColTextImageSection',
@@ -215,10 +215,10 @@ export const twoColTextImageSection = defineType({
   ],
   preview: {
     select: { title: 'title', subtitle: 'subtitle', media: 'image' },
-    prepare: ({ title, subtitle, media }: { title?: string; subtitle?: string; media?: unknown }) => ({
+    prepare: ({ title, subtitle }: { title?: string; subtitle?: string }) => ({
       title: title ?? 'Two Column Text + Image Section',
       subtitle: subtitle ? `Two Column Text + Image · ${subtitle}` : 'Two Column Text + Image Section',
-      media: media ?? LuColumns3
+      media: LuColumns3
     })
   }
 });

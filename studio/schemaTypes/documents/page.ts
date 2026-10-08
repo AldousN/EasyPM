@@ -1,6 +1,6 @@
 import { LuFiles } from 'react-icons/lu';
-import { defineArrayMember, defineField, defineType, type Rule } from 'sanity';
-import { SLUG_FIELD_DESCRIPTION, slugValidation } from '../utils/slugValidation';
+import { defineArrayMember, defineField, defineType } from 'sanity';
+import { SLUG_FIELD_DESCRIPTION, validateSlugValue } from '../utils/slugValidation';
 
 const PAGE_TYPES = [
   { title: 'Home', value: 'home' },
@@ -52,7 +52,7 @@ export const page = defineType({
       type: 'slug',
       options: { source: 'title' },
       description: SLUG_FIELD_DESCRIPTION,
-      validation: slugValidation,
+      validation: (Rule) => Rule.required().custom(validateSlugValue),
       group: 'pageInfo'
     }),
     defineField({

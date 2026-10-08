@@ -7,7 +7,6 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import https from 'https';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const publicFontsDir = path.join(__dirname, '..', 'public', 'fonts');
@@ -51,7 +50,7 @@ async function convertWithWoff2Library() {
         console.log(`❌ Failed to convert ${font.input}: ${e.message}\n`);
       }
     }
-  } catch (e) {
+  } catch {
     console.log('ℹ️  woff2 package not available');
     console.log('ℹ️  Please use online converter or install: npm install -D woff2\n');
     manualInstructions();

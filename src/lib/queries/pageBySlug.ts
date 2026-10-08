@@ -9,8 +9,7 @@ import {
   COMMUNITY_FRAGMENT,
   LINK_FRAGMENT,
   ICON_GRID_ITEM_FRAGMENT,
-  FORM_FIELD_FRAGMENT,
-  ICON_FRAGMENT
+  FORM_FIELD_FRAGMENT
 } from './fragments';
 
 export type PageBySlugPayload = {

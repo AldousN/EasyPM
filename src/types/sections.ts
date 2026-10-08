@@ -191,6 +191,7 @@ export type TwoColTextImageSection = BaseSection & {
   subtitle?: string;
   description?: PortableTextBlock[];
   bullets?: string[];
+  bulletIcon?: 'check' | 'circle';
   ctaLabel?: string;
   ctaLink?: string;
   secondaryCtaLabel?: string;

@@ -186,7 +186,7 @@ const needsIconReferenceFix = (section: OldSection) => {
   });
 };
 
-const mapIconGridSection = (section: OldSection, index: number) => ({
+const mapIconGridSection = (section: OldSection, _index: number) => ({
   ...section,
   items: (section.items ?? []).map((item: any, itemIndex: number) =>
     normalizeIconItem(item, section._key, itemIndex, 'icon')

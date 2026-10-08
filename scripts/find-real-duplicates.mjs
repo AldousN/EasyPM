@@ -44,7 +44,7 @@ async function findRealDuplicates() {
   } else {
     console.log(`\n⚠️  Total duplicate slug groups: ${duplicateCount}`);
     console.log(`\nTo delete duplicates, use these IDs:`);
-    allDuplicates.forEach(({ slug, items }) => {
+    allDuplicates.forEach(({ items }) => {
       // Keep the first one, delete the rest
       items.slice(1).forEach((item) => {
         console.log(`  sanity documents delete ${item._id}`);

@@ -34,7 +34,6 @@ const componentMap = {
   stepsSection: StepsSection
 } as const;
 
-const fullBleedSections = new Set(['heroSection', 'processSection', 'leadFormSection']);
 ---
 
 {sections.map((section) => {
@@ -42,20 +41,6 @@ const fullBleedSections = new Set(['heroSection', 'processSection', 'leadFormSec
   if (!Component) {
     return null;
   }
-
-  // Check if section has a non-default branded background
-  const hasColorTheme = 'colorTheme' in section || 'backgroundTheme' in section;
-  const colorTheme = (section as any)?.colorTheme ?? (section as any)?.backgroundTheme;
-  const isColoredSection =
-    hasColorTheme &&
-    colorTheme &&
-    ['blue', 'darkBlue', 'yellow', 'oliveGreen', 'darkGreen', 'cream'].includes(colorTheme);
-
-  const isCtaFullWidth =
-    section._type === 'ctaSection' && section.layoutStyle && section.layoutStyle !== 'boxed';
-  const isContactFullWidth = section._type === 'contactSection';
-  const isColorBackgroundFullWidth = isColoredSection;
-  const isFullBleed = isCtaFullWidth || isContactFullWidth || isColorBackgroundFullWidth || fullBleedSections.has(section._type);
 
   return (
     <Component {...section} />

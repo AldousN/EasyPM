@@ -727,7 +727,7 @@ const turnstileEnabled =
             // Turnstile tokens are one-shot. Reset the widget so a second
             // submission from the same page asks for a fresh challenge.
             if (window.turnstile && turnstileWidget) {
-              try { window.turnstile.reset(turnstileWidget); } catch (e) {}
+              try { window.turnstile.reset(turnstileWidget); } catch { /* Stale widget: show the submission status below. */ }
             }
             if (statusEl) {
               statusEl.textContent = successMessage;
@@ -736,7 +736,7 @@ const turnstileEnabled =
           } else {
             throw new Error('Submission failed');
           }
-        } catch (err) {
+        } catch {
           if (statusEl) {
             statusEl.textContent = errorMessage;
             statusEl.className = 'bbg-form-status is-error';

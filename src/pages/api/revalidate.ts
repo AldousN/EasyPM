@@ -99,7 +99,7 @@ export const POST: APIRoute = async ({ request }) => {
     });
   }
 
-  let payload: any = null;
+  let payload: any;
   try {
     payload = await request.json();
   } catch {

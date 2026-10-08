@@ -1,6 +1,6 @@
 import { LuPenLine } from 'react-icons/lu';
-import { defineArrayMember, defineField, defineType, type Rule } from 'sanity';
-import { SLUG_FIELD_DESCRIPTION, slugValidation } from '../utils/slugValidation';
+import { defineArrayMember, defineField, defineType } from 'sanity';
+import { SLUG_FIELD_DESCRIPTION, validateSlugValue } from '../utils/slugValidation';
 
 export const blogPost = defineType({
   name: 'blogPost',
@@ -24,7 +24,7 @@ export const blogPost = defineType({
       type: 'slug',
       options: { source: 'title', maxLength: 96 },
       description: SLUG_FIELD_DESCRIPTION,
-      validation: slugValidation,
+      validation: (Rule) => Rule.required().custom(validateSlugValue),
       group: 'postInfo'
     }),
     defineField({

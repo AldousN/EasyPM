@@ -1,5 +1,5 @@
 import { LuSlidersHorizontal } from 'react-icons/lu';
-import { defineArrayMember, defineField, defineType, type Rule } from 'sanity';
+import { defineArrayMember, defineField, defineType } from 'sanity';
 
 export const globalSettings = defineType({
   name: 'globalSettings',

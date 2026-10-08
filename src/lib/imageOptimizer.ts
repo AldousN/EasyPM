@@ -167,7 +167,7 @@ function getSharedHeroQuality(width: number): number {
 
 export function getHeroBackgroundUrl(
   source: string | SanityImageSource | undefined,
-  layout: 'twoColumn' | 'singleColumn' = 'singleColumn',
+  _layout: 'twoColumn' | 'singleColumn' = 'singleColumn',
   format?: ImageOptimizationOptions['format']
 ): string {
   if (!source) return '';

@@ -450,7 +450,7 @@ export default function MissingContentWidget() {
                   <Stack space={3}>
                     <Flex align="center" justify="space-between">
                       <Heading size={1}>{card.title}</Heading>
-                      <Badge mode="outline" padding={2} tone={tone === 'positive' ? 'positive' : tone}>
+                      <Badge padding={2} tone={tone === 'positive' ? 'positive' : tone}>
                         {card.health}%
                       </Badge>
                     </Flex>

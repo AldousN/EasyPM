@@ -81,9 +81,9 @@ const totalCities = stateGroups.reduce(
               </div>
             )}
 
-            {group.areas?.length > 0 && (
+            {(group.areas ?? []).length > 0 && (
               <ul class="bbg-areas-grid" aria-label={`Cities in ${group.stateTitle ?? 'this state'}`}>
-                {group.areas.map((area) => {
+                {(group.areas ?? []).map((area) => {
                   const href = resolveLink(area.link);
                   const label = area.cityName;
 

@@ -13,8 +13,8 @@
  * matches the official parser's output shape so the swap is trivial.
  */
 
-const OPEN_RE = /<!--\s+wp:([a-zA-Z0-9_\-\/]+)\s*(\{[^}]*\})?\s*(\/)?-->/;
-const CLOSE_RE = /<!--\s+\/wp:([a-zA-Z0-9_\-\/]+)\s+-->/;
+const OPEN_RE = /<!--\s+wp:([a-zA-Z0-9_\-/]+)\s*(\{[^}]*\})?\s*(\/)?-->/;
+const CLOSE_RE = /<!--\s+\/wp:([a-zA-Z0-9_\-/]+)\s+-->/;
 
 export function parseBlocks(content) {
   if (!content || typeof content !== 'string') return [];

@@ -1,7 +1,7 @@
-import sanityClient from '@sanity/client';
+import { createClient } from '@sanity/client';
 import 'dotenv/config';
 
-const client = sanityClient({
+const client = createClient({
   projectId: process.env.SANITY_PROJECT_ID,
   dataset: process.env.SANITY_DATASET,
   apiVersion: '2024-05-01',

@@ -117,13 +117,13 @@ const imageUrlFor = (img: any, width: number, height: number) => {
                     <p class="bbg-steps-card-desc">{step.description}</p>
                   )}
 
-                  {step.bullets?.length > 0 && (
+                  {(step.bullets ?? []).length > 0 && (
                     <div class="bbg-steps-bullets-wrap">
                       {(step as any).bulletsTitle && (
                         <p class="bbg-steps-bullets-title">{(step as any).bulletsTitle}</p>
                       )}
                       <ul class="bbg-steps-bullets">
-                        {step.bullets.map((bullet) => (
+                        {(step.bullets ?? []).map((bullet) => (
                           <li>
                             <span class="bbg-steps-bullet-mark" aria-hidden="true">
                               <svg viewBox="0 0 24 24" class="h-full w-full fill-current">

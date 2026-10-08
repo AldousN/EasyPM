@@ -7,7 +7,7 @@
  * folding it back into a bullets[] field if context demands it. For v0.1
  * we emit standalone; editors can collapse manually if needed.
  */
-export default async function iconlist(block, ctx) {
+export default async function iconlist(block, _ctx) {
   const items = (block.innerBlocks ?? [])
     .filter((b) => b.name === 'kadence/listitem')
     .map((li) => ({

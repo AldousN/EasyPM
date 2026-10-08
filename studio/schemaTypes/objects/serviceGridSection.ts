@@ -1,5 +1,5 @@
 import { LuGrid2X2 } from 'react-icons/lu';
-import { defineArrayMember, defineField, defineType, type Rule } from 'sanity';
+import { defineArrayMember, defineField, defineType } from 'sanity';
 
 export const serviceGridSection = defineType({
   name: 'serviceGridSection',

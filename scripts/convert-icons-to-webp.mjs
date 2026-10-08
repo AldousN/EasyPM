@@ -1,5 +1,5 @@
 import sharp from 'sharp';
-import { readdir, stat } from 'fs/promises';
+import { stat } from 'fs/promises';
 import path from 'path';
 
 const imageDir = './public/images';

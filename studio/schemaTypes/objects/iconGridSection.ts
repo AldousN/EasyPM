@@ -1,5 +1,5 @@
 import { LuShapes } from 'react-icons/lu';
-import { defineArrayMember, defineField, defineType, type Rule } from 'sanity';
+import { defineArrayMember, defineField, defineType } from 'sanity';
 
 export const iconGridSection = defineType({
   name: 'iconGridSection',

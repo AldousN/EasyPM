@@ -1,6 +1,7 @@
 import { fetchAllPageSlugs } from '../lib/queries/allPages';
 import { fetchAllBlogPostSlugs } from '../lib/queries/allBlogPosts';
 import { PREFERRED_SITE_ORIGIN } from '../lib/canonical';
+import { isPendingServiceSlug, pendingServicesEnabled } from '../data/serviceScope';
 
 export const prerender = false;
 
@@ -26,7 +27,7 @@ export async function GET() {
   
   <!-- Dynamic Pages -->
   ${pages
-      .filter(page => page.slug && page.slug !== 'home')
+      .filter(page => page.slug && page.slug !== 'home' && (pendingServicesEnabled || !isPendingServiceSlug(page.slug)))
       .map(page => `
   <url>
     <loc>${siteUrl}/${page.slug}/</loc>

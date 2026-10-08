@@ -1,5 +1,3 @@
-import type { Rule } from 'sanity';
-
 type SlugValue = {
   current?: string;
 };
@@ -18,6 +16,3 @@ export const validateSlugValue = (value?: SlugValue) => {
 
   return true;
 };
-
-export const slugValidation = (rule: Rule) =>
-  rule.required().custom(validateSlugValue);

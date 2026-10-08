@@ -40,7 +40,7 @@ export async function mapBlockToSection(block, ctx) {
     return await handler(block, ctx);
   }
   // Unknown — fall through to raw-HTML preservation
-  return await fallbackHtml(block, ctx);
+  return fallbackHtml(block, ctx);
 }
 
 export { MAPPERS };

@@ -31,12 +31,12 @@ try {
       try {
         execSync(`python3 -m fontTools.ttx -o ${woff2Path.replace('.woff2', '.otf')} ${ttfPath}`, { stdio: 'pipe' });
         console.log(`✓ Converted: ${file}`);
-      } catch (e) {
+      } catch {
         console.log(`⚠️  Skipping ${file} - conversion failed`);
       }
     }
   });
-} catch (e) {
+} catch {
   // Fallback: Use pre-provided WOFF2 data or download
   console.log('⚠️  fonttools not available, using web-based converter\n');
   console.log('📋 Manual conversion needed - pre-converted WOFF2 files provided below:');

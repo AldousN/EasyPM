@@ -1,1 +1,10 @@
 node_modules
+.npm-cache/
+.astro/
+.vercel/
+dist/
+studio/dist/
+.env
+.env.*
+!.env.example
+!studio/.env.example

@@ -62,12 +62,10 @@ const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const imageCache = new Map();
 
 async function withRetry(label, fn, { attempts = 3, delay = 750 } = {}) {
-  let lastErr;
   for (let i = 1; i <= attempts; i++) {
     try {
       return await fn();
     } catch (err) {
-      lastErr = err;
       console.warn(`⚠️  Attempt ${i}/${attempts} failed: ${label} (${err.message || err})`);
       if (i < attempts) {
         await sleep(delay * i);
@@ -117,7 +115,6 @@ function collectCategories(categoryField) {
   const entries = normalizeItems(categoryField);
   for (const entry of entries) {
     const domain = entry?.['domain'] || '';
-    const nicename = entry?.['nicename'] || '';
     const name = entry?.['#text'] || '';
     
     if (domain === 'category') {

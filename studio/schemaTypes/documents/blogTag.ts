@@ -1,6 +1,6 @@
 import { LuTag } from 'react-icons/lu';
 import { defineField, defineType } from 'sanity';
-import { SLUG_FIELD_DESCRIPTION, slugValidation } from '../utils/slugValidation';
+import { SLUG_FIELD_DESCRIPTION, validateSlugValue } from '../utils/slugValidation';
 
 export const tag = defineType({
   name: 'tag',
@@ -22,7 +22,7 @@ export const tag = defineType({
       type: 'slug',
       options: { source: 'name' },
       description: SLUG_FIELD_DESCRIPTION,
-      validation: slugValidation
+      validation: (Rule) => Rule.required().custom(validateSlugValue)
     })
   ],
   preview: { select: { title: 'name' } }

@@ -1,7 +1,7 @@
 import { createServer } from 'node:http';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
-import { dirname, extname, join, resolve } from 'node:path';
+import { extname, join, resolve } from 'node:path';
 
 const repoRoot = resolve(import.meta.dirname, '..');
 const appRoot = join(repoRoot, 'tools', 'project-starter');

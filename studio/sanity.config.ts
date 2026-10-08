@@ -5,7 +5,6 @@ import { dashboardTool } from '@sanity/dashboard';
 import deskStructure from './deskStructure';
 import { schemaTypes } from './schemaTypes';
 import MissingContentWidget from './widgets/MissingContentWidget';
-import { StudioTheme } from './components/StudioTheme';
 
 // Env files are loaded by sanity.cli.js (Node context). Keep this config browser-safe.
 
@@ -23,14 +22,6 @@ export default defineConfig({
   projectId,
   dataset,
   icon: () => '🐞',
-  studio: {
-    components: [
-      {
-        name: 'theme',
-        component: StudioTheme
-      }
-    ]
-  },
   plugins: [
     dashboardTool({
       widgets: [

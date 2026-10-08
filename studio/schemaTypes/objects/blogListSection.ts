@@ -1,5 +1,5 @@
 import { LuNewspaper } from 'react-icons/lu';
-import { defineField, defineType, type Rule } from 'sanity';
+import { defineField, defineType } from 'sanity';
 
 export const blogListSection = defineType({
   name: 'blogListSection',
