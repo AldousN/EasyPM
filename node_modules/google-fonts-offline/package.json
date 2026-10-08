@@ -1,0 +1,30 @@
+{
+  "name": "google-fonts-offline",
+  "version": "0.1.5",
+  "description": "Use Google Fonts while you're offline or in development.",
+  "author": "PM <paul@makovi.ch>",
+  "contributors": [
+    "Christian Ulbrich (https://github.com/ChristianUlbrich)"
+  ],
+  "bin": {
+    "goofoffline": "./bin/goofoffline"
+  },
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/makovich/google-fonts-offline.git"
+  },
+  "bugs": {
+    "url": "http://github.com/makovich/google-fonts-offline/issues"
+  },
+  "keywords": [
+    "google",
+    "fonts",
+    "font",
+    "offline",
+    "download",
+    "local"
+  ],
+  "preferGlobal": true,
+  "license": "Unlicense"
+}
