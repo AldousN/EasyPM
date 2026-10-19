@@ -117,12 +117,12 @@ const pages: Record<string, PageData> = {
         imagePlacement: 'imageRight', backgroundTheme: 'white',
       },
       estimateStrip,
-      { _type: 'twoColTextImageSection', title: 'Residential and commercial service', description: paragraphs('EasyPM serves homes and business properties in Philadelphia and surrounding areas. Tell us about your location, property and concern to discuss the available options.'), images: [
+      { _type: 'twoColTextImageSection', title: 'Residential and commercial service', highlightText: 'Commercial Service', description: paragraphs('EasyPM serves homes and business properties in Philadelphia and surrounding areas. Tell us about your location, property and concern to discuss the available options.'), images: [
         { url: '/images/easypm-property-1-figma.webp', alt: 'Brick residential building' },
         { url: '/images/easypm-property-2-figma.webp', alt: 'Single-story home with a front garage' },
         { url: '/images/easypm-property-3-figma.webp', alt: 'White house with a front porch' },
         { url: '/images/easypm-property-4-figma.webp', alt: 'Blue house with a front garage' },
-      ], imagePlacement: 'imageRight', backgroundTheme: 'darkGreen', ctaLabel: 'Ask About Service', ctaLink: '/contact/' },
+      ], imagePlacement: 'imageRight', backgroundTheme: 'oliveGreen', ctaLabel: 'Ask About Service', ctaLink: '/contact/' },
       reasonsCards,
       propertyCards,
     ] as Sections[],

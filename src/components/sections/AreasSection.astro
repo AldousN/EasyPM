@@ -187,18 +187,22 @@ const totalCities = stateGroups.reduce(
 
   .bbg-areas-dark .bbg-areas-title { color: var(--warm-white); }
 
-  /* Unified highlight — red italic on light, sand-pale italic on dark. */
+  /* Heading emphasis uses solid purple without an underline. */
   .bbg-areas-leaf {
     display: inline-block;
-    color: var(--emergency);
-    font-style: italic;
+    color: var(--heading-highlight-color);
+    font-style: inherit;
     padding-right: 0.05em;
+    text-decoration: none;
+    border-bottom: 0;
   }
   .bbg-areas-leaf-dark {
     display: inline-block;
-    color: var(--sand-pale);
-    font-style: italic;
+    color: var(--purple-highlight-dark);
+    font-style: inherit;
     padding-right: 0.05em;
+    text-decoration: none;
+    border-bottom: 0;
   }
 
   .bbg-areas-desc {

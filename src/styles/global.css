@@ -6,7 +6,27 @@
   --color-purple-600: var(--purple-primary);
   --color-purple-700: var(--purple-hover);
   --color-purple-50: var(--purple-soft);
+  --color-figma-primary: var(--figma-purple-primary);
+  --color-figma-interactive: var(--figma-purple-interactive);
+  --color-figma-secondary: var(--figma-purple-secondary);
+  --color-figma-base: var(--figma-surface-base);
+  --font-figma-heading: var(--figma-font-heading);
+  --font-figma-body: var(--figma-font-body);
+  --text-figma-h1: var(--figma-h1-size);
+  --text-figma-h1--line-height: var(--figma-heading-leading);
+  --text-figma-h2: var(--figma-h2-size);
+  --text-figma-h2--line-height: var(--figma-heading-leading);
+  --text-figma-h3: var(--figma-h3-size);
+  --text-figma-h3--line-height: var(--figma-heading-leading);
+  --text-figma-body-l: var(--figma-body-l-size);
+  --text-figma-body-l--line-height: var(--figma-body-l-leading);
+  --text-figma-body-s: var(--figma-body-s-size);
+  --text-figma-body-s--line-height: var(--figma-body-s-leading);
 }
+
+/* Neutral reference utilities are intentionally limited to text and icons. */
+@utility text-figma-strong { color: var(--figma-text-strong); }
+@utility text-figma-body { color: var(--figma-text-body); }
 
 /**
  * NON-CRITICAL CSS

@@ -347,12 +347,14 @@ const categoryNames = [...new Set<string>(allPosts.flatMap((post: any) => Array.
   @media (min-width: 1024px) { .blog-list-section { padding-block: 96px; } .blog-empty-state { padding: 64px; } .blog-empty-cta { font-size: 16px; } }
   @media (max-width: 400px) { .blog-empty-state { padding: 40px 24px; } .blog-empty-cta { padding-inline: 24px; } }
   @media (prefers-reduced-motion: reduce) { .blog-category-chip, .blog-empty-cta { transition: none; } .blog-empty-cta:is(:hover, :focus-visible, :active) { transform: none; } }
-  /* Unified highlight — red italic, matches hero. */
+  /* Heading emphasis uses solid purple without an underline. */
   .bbg-blog-leaf {
     display: inline-block;
-    color: var(--emergency);
-    font-style: italic;
+    color: var(--heading-highlight-color);
+    font-style: inherit;
     padding-right: 0.05em;
+    text-decoration: none;
+    border-bottom: 0;
   }
 </style>
 

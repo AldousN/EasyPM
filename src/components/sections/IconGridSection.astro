@@ -319,17 +319,21 @@ const sectionTopHref = normalizeInternalHref(props.ctaLink);
 
   :is(.bbg-icon-dark, .bbg-icon-olive) .bbg-icon-title { color: var(--warm-white); }
 
-  /* Highlight word: solid brand red, italic. 5.4:1 vs warm-white = AA. */
+  /* Heading emphasis uses solid purple without an underline. */
   .bbg-icon-leaf {
     display: inline-block;
-    font-style: italic;
+    font-style: inherit;
     padding-right: 0.05em;
-    color: var(--emergency);
+    color: var(--heading-highlight-color);
+    text-decoration: none;
+    border-bottom: 0;
   }
 
-  /* On dark sections, fall back to sand-pale (red on green-deep fails). */
+  /* Use the lighter purple on dark section backgrounds. */
   :is(.bbg-icon-dark, .bbg-icon-olive) .bbg-icon-leaf {
-    color: #fff;
+    color: var(--purple-highlight-dark);
+    text-decoration: none;
+    border-bottom: 0;
   }
 
   .bbg-icon-desc {

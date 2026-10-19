@@ -192,18 +192,22 @@ const rightColumnFaqs = faqs.filter((_, index) => index % 2 === 1);
 
   .bbg-faq-dark .bbg-faq-title { color: var(--warm-white); }
 
-  /* Unified highlight — red italic on light, sand-pale italic on dark. */
+  /* Heading emphasis uses solid purple without an underline. */
   .bbg-faq-leaf {
     display: inline-block;
-    color: var(--emergency);
-    font-style: italic;
+    color: var(--heading-highlight-color);
+    font-style: inherit;
     padding-right: 0.05em;
+    text-decoration: none;
+    border-bottom: 0;
   }
   .bbg-faq-leaf-dark {
     display: inline-block;
-    color: var(--sand-pale);
-    font-style: italic;
+    color: var(--purple-highlight-dark);
+    font-style: inherit;
     padding-right: 0.05em;
+    text-decoration: none;
+    border-bottom: 0;
   }
 
   .bbg-faq-desc {

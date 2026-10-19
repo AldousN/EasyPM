@@ -329,15 +329,19 @@ const turnstileEnabled =
 
   .bbg-form-dark .bbg-form-title { color: var(--warm-white); }
 
-  /* Unified highlight — red italic on light, sand-pale italic on dark. */
+  /* Heading emphasis uses solid purple without an underline. */
   .bbg-form-leaf {
     display: inline-block;
-    color: var(--emergency);
-    font-style: italic;
+    color: var(--heading-highlight-color);
+    font-style: inherit;
     padding-right: 0.05em;
+    text-decoration: none;
+    border-bottom: 0;
   }
   .bbg-form-dark .bbg-form-leaf {
-    color: var(--sand-pale);
+    color: var(--purple-highlight-dark);
+    text-decoration: none;
+    border-bottom: 0;
   }
 
   .bbg-form-sub {
@@ -638,6 +642,7 @@ const turnstileEnabled =
   .bbg-form-figma .bbg-form-eyebrow { color: var(--button-text); }
   .bbg-form-figma .bbg-form-eyebrow-dot { background: var(--purple-primary); box-shadow: 0 0 0 3px var(--purple-soft); }
   .bbg-form-figma .bbg-form-title { color: var(--purple-primary); font-size: clamp(29px, 3vw, 42px); line-height: 1.16; }
+  .bbg-form-figma .bbg-form-leaf { color: var(--heading-highlight-color); }
   .bbg-form-figma .bbg-form-sub { margin-top: 12px; }
   .bbg-form-figma .bbg-form-card { max-width: none; border: 0; border-radius: 0; box-shadow: none; padding: 0; }
   .bbg-form-contact-details { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 24px; text-align: left; }

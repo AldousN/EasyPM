@@ -61,7 +61,7 @@ const imageUrl = (image: NonNullable<ProcessSection['steps'][number]['image']>, 
   .figma-cards-dark { background: #262626; color: #fff; }
   .figma-cards-badge { background: #e9e9e9; }
   .figma-cards-inner { width: min(100%, var(--site-content-width)); margin-inline: auto; }
-  .figma-cards-highlight { color: var(--purple-hover); text-decoration: underline; text-decoration-color: var(--purple-soft); text-decoration-thickness: .08em; text-underline-offset: .13em; }
+  .figma-cards-highlight { color: var(--heading-highlight-color); text-decoration: none; border-bottom: 0; }
   .figma-cards-heading { max-width: 720px; margin: 0 auto 42px; text-align: center; }
   .figma-cards-heading h2 { margin: 0 0 10px; font: 700 clamp(28px, 3vw, 40px)/1.15 var(--font-heading); }
   .figma-cards-heading p { margin: 0; font: 400 clamp(15px, 1.25vw, 18px)/1.5 var(--font-body); }
@@ -97,7 +97,7 @@ const imageUrl = (image: NonNullable<ProcessSection['steps'][number]['image']>, 
   .figma-cards-photo .figma-card:is(:hover, :focus-within) .figma-card-arrow { transform: translateX(4px); border-color: var(--purple-soft); }
   .figma-cards-photo .figma-card-description { color: #d5d9e3; text-transform: none; }
   .figma-cards-dark .figma-cards-heading h2 { color: #fff; }
-  .figma-cards-dark .figma-cards-highlight { color: #fff; }
+  .figma-cards-dark .figma-cards-highlight { color: var(--purple-highlight-dark); text-decoration: none; border-bottom: 0; }
   .figma-cards-dark .figma-cards-heading p { color: #e5e5e5; }
   .figma-card-description { font: 400 14px/1.45 var(--font-body); }
   .figma-card-description :global(p) { margin: 0; }

@@ -57,13 +57,13 @@ export const twoColTextImageSection = defineType({
           { title: 'Soft Green (very pale)', value: 'soft-green' },
           { title: 'Sage Green (light)', value: 'sage' },
           { title: 'Cream', value: 'cream' },
-          { title: 'Olive Green (medium)', value: 'oliveGreen' },
+          { title: 'Figma Light Reference', value: 'oliveGreen' },
           { title: 'Dark Green', value: 'darkGreen' }
         ],
         layout: 'radio'
       },
       initialValue: 'white',
-      description: 'Uniform background set used across all sections — white, soft green, sage green, cream, olive, and dark green.'
+      description: 'Choose the section surface. Figma Light Reference uses the off-white base, Inter headings, Roboto body copy, and primary-purple accents.'
     }),
     defineField({
       name: 'bulletTitle',

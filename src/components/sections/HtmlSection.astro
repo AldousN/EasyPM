@@ -168,12 +168,14 @@ const deferredSrcsJson = JSON.stringify(deferredSrcs);
     margin: 0;
   }
 
-  /* Unified highlight — red italic. */
+  /* Heading emphasis uses solid purple without an underline. */
   .bbg-html-leaf {
     display: inline-block;
-    color: var(--emergency);
-    font-style: italic;
+    color: var(--heading-highlight-color);
+    font-style: inherit;
     padding-right: 0.05em;
+    text-decoration: none;
+    border-bottom: 0;
   }
 
   .bbg-html-sub {

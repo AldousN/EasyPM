@@ -1,4 +1,6 @@
 ---
+import '@fontsource/roboto/latin-400.css';
+import '@fontsource/roboto/latin-700.css';
 import type { TwoColTextImageSection } from "../../types/sections";
 import { portableTextToHtml } from "../../lib/portableText";
 import { splitHighlight, titleCaseHeading } from "../../utils/highlightTitle";
@@ -114,8 +116,7 @@ const backgroundTheme =
  *   soft-green  — surface-soft-green (light text scheme)
  *   sage        — surface-sage    (light text scheme)
  *   cream       — sand-pale       (light text scheme)
- *   oliveGreen  — true olive #5E7F3A (dark text scheme) — visibly
- *                 distinct from darkGreen
+ *   oliveGreen  — Figma reference light surface (legacy schema value)
  *   darkGreen   — legacy name for the client's light-purple content surface
  */
 const themeConfig = {
@@ -149,10 +150,10 @@ const themeConfig = {
   },
   oliveGreen: {
     base: "bbg-twocol-theme-olive",
-    title: "bbg-twocol-title-dark",
-    subtitle: "bbg-twocol-sub-dark",
-    highlight: "bbg-twocol-highlight-dark",
-    isDark: true,
+    title: "bbg-twocol-title-light",
+    subtitle: "bbg-twocol-sub-light",
+    highlight: "bbg-twocol-highlight",
+    isDark: false,
   },
   darkGreen: {
     base: "bbg-twocol-theme-darkgreen",
@@ -488,13 +489,13 @@ const getImageSpanClasses = (index: number) => {
   .bbg-twocol-section:is(.bbg-twocol-theme-darkgreen, .bbg-twocol-theme-olive) { padding-block: 64px; }
   :is(.bbg-twocol-theme-darkgreen, .bbg-twocol-theme-olive) .bbg-twocol-grid { grid-template-columns: minmax(0, 1fr); gap: 40px; padding: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
   :is(.bbg-twocol-theme-darkgreen, .bbg-twocol-theme-olive) .bbg-twocol-content { min-width: 0; gap: 24px; }
-  :is(.bbg-twocol-theme-darkgreen, .bbg-twocol-theme-olive) .bbg-twocol-title { color: #fff; font-size: clamp(30px, 3.2vw, 40px); font-weight: 800; }
-  :is(.bbg-twocol-theme-darkgreen, .bbg-twocol-theme-olive) .section-description { max-width: 576px; color: var(--purple-soft); font-size: clamp(16px, 1.5vw, 18px); font-weight: 400; }
+  :is(.bbg-twocol-theme-darkgreen, .bbg-twocol-theme-olive) .bbg-twocol-title { color: #0f172a; font-size: clamp(30px, 3.2vw, 40px); font-weight: 800; }
+  :is(.bbg-twocol-theme-darkgreen, .bbg-twocol-theme-olive) .section-description { max-width: 576px; color: #475569; font-size: clamp(16px, 1.5vw, 18px); font-weight: 400; }
   :is(.bbg-twocol-theme-darkgreen, .bbg-twocol-theme-olive) .section-description :global(p) { color: inherit; }
   :is(.bbg-twocol-theme-darkgreen, .bbg-twocol-theme-olive) .bbg-twocol-ctas { padding-top: 0; }
-  :is(.bbg-twocol-theme-darkgreen, .bbg-twocol-theme-olive) .bbg-twocol-ctas a { background: #fff; color: var(--purple-primary); font-weight: 700; box-shadow: var(--button-shadow-md); }
-  :is(.bbg-twocol-theme-darkgreen, .bbg-twocol-theme-olive) .bbg-twocol-ctas a:is(:hover, :focus-visible) { background: var(--purple-soft); color: var(--purple-hover); }
-  :is(.bbg-twocol-theme-darkgreen, .bbg-twocol-theme-olive) .bbg-twocol-ctas a:focus-visible { outline-color: #fff; }
+  :is(.bbg-twocol-theme-darkgreen, .bbg-twocol-theme-olive) .bbg-twocol-ctas a { background: var(--purple-primary); color: var(--button-text); font-weight: 700; box-shadow: var(--button-shadow-md); }
+  :is(.bbg-twocol-theme-darkgreen, .bbg-twocol-theme-olive) .bbg-twocol-ctas a:is(:hover, :focus-visible) { background: var(--purple-hover); color: var(--button-text); }
+  :is(.bbg-twocol-theme-darkgreen, .bbg-twocol-theme-olive) .bbg-twocol-ctas a:focus-visible { outline-color: var(--purple-hover); }
   @media (min-width: 1024px) {
     .bbg-twocol-section:is(.bbg-twocol-theme-darkgreen, .bbg-twocol-theme-olive) { padding-block: 96px; }
     :is(.bbg-twocol-theme-darkgreen, .bbg-twocol-theme-olive) .bbg-twocol-grid:not(.has-no-image) { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 64px; }
@@ -538,9 +539,22 @@ const getImageSpanClasses = (index: number) => {
   .bbg-twocol-theme-softgreen { background: var(--surface-soft-green); color: var(--ink-soft); }
   .bbg-twocol-theme-sage      { background: var(--surface-sage);       color: var(--ink-soft); }
   .bbg-twocol-theme-cream     { background: var(--sand-pale);          color: var(--ink-soft); }
-  /* True olive — distinctly more yellow-green than green-deep so the
-     "Olive Green" Sanity option visibly differs from "Dark Green". */
-  .bbg-twocol-theme-olive     { background: #5E7F3A;                   color: var(--warm-white); }
+  /* Preserve the stored theme value while using the client's neutral palette. */
+  .bbg-twocol-theme-olive {
+    --font-heading: var(--figma-font-heading);
+    --font-body: var(--figma-font-body);
+    --purple-primary: var(--figma-purple-primary);
+    --purple-hover: var(--figma-purple-secondary);
+    --button-text: var(--figma-surface-base);
+    background: var(--figma-surface-base);
+    color: var(--figma-text-body);
+  }
+  .bbg-twocol-theme-olive .bbg-twocol-title { font-family: var(--figma-font-heading); font-size: var(--figma-h2-size); line-height: var(--figma-heading-leading); }
+  .bbg-twocol-theme-olive .bbg-twocol-title-light { color: var(--figma-text-strong); }
+  .bbg-twocol-theme-olive .section-description { color: var(--figma-text-body); font-family: var(--figma-font-body); font-size: var(--figma-body-s-size); line-height: var(--figma-body-s-leading); }
+  .bbg-twocol-theme-olive .bbg-twocol-sub-light { color: var(--figma-text-body); }
+  .bbg-twocol-theme-olive .bbg-twocol-gallery.is-four { gap: 16px; }
+  @media (min-width: 640px) { .bbg-twocol-theme-olive .bbg-twocol-gallery.is-four { gap: 20px; } }
   .bbg-twocol-theme-darkgreen { background: var(--surface-white);      color: #334155; }
   :global(.figma-estimate-strip) + .bbg-twocol-theme-darkgreen { background: var(--purple-soft); }
   .bbg-twocol-theme-darkgreen .bbg-twocol-title-light { color: #0f172a; }
@@ -566,19 +580,22 @@ const getImageSpanClasses = (index: number) => {
     margin: 0;
   }
 
-  /* Highlight word — red italic on light bg, sand-pale italic on dark bg.
-     Matches the hero "Aprehend" treatment site-wide. */
+  /* Heading emphasis uses solid purple without an underline. */
   .bbg-twocol-highlight {
     display: inline-block;
-    color: var(--emergency);
-    font-style: italic;
+    color: var(--heading-highlight-color);
+    font-style: inherit;
     padding-right: 0.05em;
+    text-decoration: none;
+    border-bottom: 0;
   }
   .bbg-twocol-highlight-dark {
     display: inline-block;
-    color: var(--sand-pale);
-    font-style: italic;
+    color: var(--purple-highlight-dark);
+    font-style: inherit;
     padding-right: 0.05em;
+    text-decoration: none;
+    border-bottom: 0;
   }
 
   /* === CTAs =======================================================
@@ -642,8 +659,7 @@ const getImageSpanClasses = (index: number) => {
     color: var(--purple-hover);
     font-weight: 700;
   }
-  :is(.bbg-twocol-theme-darkgreen, .bbg-twocol-theme-olive) .bbg-twocol-bullet { border-color: var(--purple-soft); color: #fff; }
-  .bbg-twocol-theme-darkgreen .bbg-twocol-bullet { border-color: var(--purple-primary); color: var(--purple-hover); }
+  :is(.bbg-twocol-theme-darkgreen, .bbg-twocol-theme-olive) .bbg-twocol-bullet { border-color: var(--purple-primary); color: var(--purple-hover); }
 
   .bbg-twocol-bullet-mark {
     display: inline-flex;
@@ -828,7 +844,6 @@ const getImageSpanClasses = (index: number) => {
   @media (min-width: 640px) { .bbg-twocol-gallery.is-four { gap: 24px; } }
   .bbg-twocol-gallery.is-contained > div.bbg-twocol-single { aspect-ratio: 4 / 3 !important; background: var(--surface-white); box-shadow: none; }
   .bbg-twocol-gallery.is-contained img { width: min(65%, 280px); height: min(65%, 280px); margin: auto; padding: 0; object-fit: contain; }
-  .bbg-twocol-highlight-dark { color: #fff; }
   @media (max-width: 767px) {
     .bbg-twocol-gallery.is-four { width: 100%; margin: 0; padding: 0; overflow: visible; scroll-snap-type: none; }
     .bbg-twocol-gallery.is-four > div { width: auto; max-width: none; min-width: 0; flex: none; aspect-ratio: 4 / 3 !important; }
