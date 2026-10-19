@@ -9,11 +9,11 @@
  */
 import type { StepsSection } from '../../types/sections';
 import { buildSanityImageUrl, optimizeImageUrl, type SanityImageSource } from '../../lib/imageOptimizer';
-import { splitHighlight } from '../../utils/highlightTitle';
+import { splitHighlight, titleCaseHeading } from '../../utils/highlightTitle';
 
 const props = Astro.props as StepsSection;
 const steps = props.steps ?? [];
-const titleSegments = props.title ? splitHighlight(props.title, (props as any).highlightText) : [];
+const titleSegments = props.title ? splitHighlight(titleCaseHeading(props.title), (props as any).highlightText) : [];
 
 const rawTheme = props.theme ?? 'white';
 const themeName =
@@ -109,7 +109,7 @@ const imageUrlFor = (img: any, width: number, height: number) => {
                       visual duplication. */}
                   <div class="bbg-steps-card-head">
                     {step.title && (
-                      <h3 class="bbg-steps-card-title">{step.title}</h3>
+                      <h3 class="bbg-steps-card-title">{titleCaseHeading(step.title)}</h3>
                     )}
                   </div>
 
@@ -172,11 +172,14 @@ const imageUrlFor = (img: any, width: number, height: number) => {
     letter-spacing: 0.18em;
     text-transform: uppercase;
     /* Darker red variant — see tokens.css comment for the WCAG math. */
-    color: var(--emergency-text);
+    color: var(--button-text);
     margin-bottom: 18px;
+    background: var(--purple-primary);
+    padding: 4px 14px;
+    border-radius: 999px;
   }
 
-  .bbg-steps-dark .bbg-steps-eyebrow { color: var(--sand-pale); }
+  .bbg-steps-dark .bbg-steps-eyebrow { color: var(--button-text); }
 
   /* Red accent dot per brand direction. */
   .bbg-steps-eyebrow-dot {
@@ -184,11 +187,12 @@ const imageUrlFor = (img: any, width: number, height: number) => {
     height: 7px;
     border-radius: 50%;
     background: var(--emergency);
-    box-shadow: 0 0 0 3px rgba(202, 30, 53, 0.18);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--purple-primary) 18%, transparent);
+    display: none;
   }
 
   .bbg-steps-dark .bbg-steps-eyebrow-dot {
-    box-shadow: 0 0 0 3px rgba(202, 30, 53, 0.32);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--purple-primary) 32%, transparent);
   }
 
   .bbg-steps-title {
@@ -270,14 +274,14 @@ const imageUrlFor = (img: any, width: number, height: number) => {
     letter-spacing: -0.025em;
     color: var(--green-deep);
     background: var(--warm-white);
-    border: 2px solid rgba(94, 127, 58, 0.32);
+    border: 2px solid color-mix(in srgb, var(--purple-primary) 32%, transparent);
     width: 56px;
     height: 56px;
     border-radius: 50%;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 8px 18px -10px rgba(94, 127, 58, 0.4);
+    box-shadow: 0 8px 18px -10px color-mix(in srgb, var(--purple-primary) 40%, transparent);
     z-index: 1;
   }
 
@@ -306,8 +310,8 @@ const imageUrlFor = (img: any, width: number, height: number) => {
     width: 2px;
     background: linear-gradient(
       to bottom,
-      rgba(94, 127, 58, 0.32) 0%,
-      rgba(94, 127, 58, 0.08) 100%
+      color-mix(in srgb, var(--purple-primary) 32%, transparent) 0%,
+      color-mix(in srgb, var(--purple-primary) 8%, transparent) 100%
     );
     margin-top: 8px;
     border-radius: 2px;
@@ -338,7 +342,7 @@ const imageUrlFor = (img: any, width: number, height: number) => {
   .bbg-steps-card:hover {
     transform: translateY(-3px);
     box-shadow: 0 28px 48px -22px rgba(29, 29, 29, 0.22);
-    border-color: rgba(94, 127, 58, 0.32);
+    border-color: color-mix(in srgb, var(--purple-primary) 32%, transparent);
   }
 
   .bbg-steps-dark .bbg-steps-card {
@@ -411,7 +415,7 @@ const imageUrlFor = (img: any, width: number, height: number) => {
     align-items: center;
     padding: 5px 12px;
     border-radius: 999px;
-    background: rgba(94, 127, 58, 0.12);
+    background: color-mix(in srgb, var(--purple-primary) 12%, transparent);
     color: var(--green-deep);
     font-family: var(--font-heading);
     font-weight: 600;
@@ -508,7 +512,7 @@ const imageUrlFor = (img: any, width: number, height: number) => {
     width: 18px;
     height: 18px;
     border-radius: 50%;
-    background: rgba(94, 127, 58, 0.16);
+    background: color-mix(in srgb, var(--purple-primary) 16%, transparent);
     color: var(--green-deep);
     display: inline-flex;
     align-items: center;

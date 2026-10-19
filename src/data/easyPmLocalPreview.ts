@@ -50,14 +50,15 @@ const reasonsCards = {
   _type: 'processSection' as const,
   visualVariant: 'figmaBadgeCards' as const,
   title: 'Why choose EasyPM?',
+  highlightText: 'EasyPM',
   subtitle: 'Start with a conversation about the property, the concern and the options available.',
   backgroundTheme: 'cream' as const,
   columns: 4 as const,
   steps: [
-    { label: 'Service for homes', description: text('Tell us what is happening in your home and ask about next steps.') },
-    { label: 'Service for businesses', description: text('Discuss your property and scheduling needs with EasyPM.') },
-    { label: 'Treatment choices', description: text('Ask about available methods and what each would involve.') },
-    { label: 'A clear next step', description: text('Understand the recommendation before deciding how to proceed.') },
+    { label: 'Service for homes', image: { url: '/images/easypm-feature-home.svg', alt: '' }, description: text('Tell us what is happening in your home and ask about next steps.') },
+    { label: 'Service for businesses', image: { url: '/images/easypm-feature-business.svg', alt: '' }, description: text('Discuss your property and scheduling needs with EasyPM.') },
+    { label: 'Treatment choices', image: { url: '/images/easypm-feature-options.svg', alt: '' }, description: text('Ask about available methods and what each would involve.') },
+    { label: 'A clear next step', image: { url: '/images/easypm-feature-next.svg', alt: '' }, description: text('Understand the recommendation before deciding how to proceed.') },
   ],
 };
 
@@ -69,9 +70,9 @@ const processCards = {
   backgroundTheme: 'white' as const,
   columns: 3 as const,
   steps: [
-    { label: 'Tell us your concern', description: text('Share what you have noticed, your location and the type of property.') },
-    { label: 'Discuss options', description: text('Ask about inspection or treatment options and the expected costs.') },
-    { label: 'Choose a next step', description: text('Decide whether to arrange the recommended service for your property.') },
+    { label: 'Tell Us Your Concern', image: { url: '/images/easypm-feature-home.svg', alt: '' }, description: text('Share what you have noticed, your location and the type of property.') },
+    { label: 'Discuss Your Options', image: { url: '/images/easypm-feature-options.svg', alt: '' }, description: text('Ask about inspection or treatment options and the expected costs.') },
+    { label: 'Choose a Next Step', image: { url: '/images/easypm-feature-next.svg', alt: '' }, description: text('Decide whether to arrange the recommended service for your property.') },
   ],
 };
 
@@ -83,6 +84,7 @@ const pages: Record<string, PageData> = {
       {
         ...hero('Take the next step toward a bed bug free property', 'Bed bug help for homes and businesses', 'Worried about bed bugs? EasyPM helps you understand your options and choose a treatment plan for your property. We offer heat treatment, Aprehend treatment and K9 inspections in Philadelphia and surrounding areas.'),
         visualVariant: 'figmaHeader',
+        highlightText: 'bed bug free',
         layoutStyle: 'twoColumn',
         mediaType: 'video',
         videoUrl: 'https://www.youtube.com/embed/PH3786NxmIE',
@@ -92,27 +94,35 @@ const pages: Record<string, PageData> = {
       {
         _type: 'serviceGridSection',
         title: 'Bed bug services built around your situation',
+        highlightText: 'Bed Bug Services',
         description: 'Whether you need help identifying a problem or choosing a treatment, start with a conversation about what you have noticed and where.',
         visualVariant: 'floatingThree',
         alignment: 'center', layoutStyle: 'stacked',
         items: [
-          { label: 'Bed Bug Heat Treatment', description: 'Ask about professional heat treatment for your property and what the treatment would involve.', icon: { url: '/images/easypm-heat-icon-figma.webp', alt: 'Clock and heat treatment symbol' }, linkLabel: 'View Heat Treatment', linkUrl: '/services/bed-bug-control/#heat-treatment' },
-          { label: 'Aprehend Treatment', description: 'Explore Aprehend as a bed bug treatment option and discuss whether it fits your property and circumstances.', icon: { url: '/images/easypm-aprehend-icon-figma.webp', alt: 'Aprehend biological bed bug control professional logo' }, linkLabel: 'View Aprehend Treatment', linkUrl: '/services/bed-bug-control/#aprehend-treatment' },
-          { label: 'K9 Bed Bug Inspections', description: 'Not sure whether bed bugs are present? Ask about a canine inspection to help investigate your concern.', icon: { url: '/images/easypm-k9-icon-figma.webp', alt: 'Colorful K9 inspection shield with hands' }, linkLabel: 'View K9 Inspections', linkUrl: '/services/bed-bug-control/#k9-inspection' },
+          { label: 'Bed Bug Heat Treatment', description: 'Ask about professional heat treatment for your property and what the treatment would involve.', icon: { url: '/images/easypm-heat-icon-figma.webp', alt: 'Clock and heat treatment symbol' }, linkLabel: 'Explore More', linkUrl: '/services/bed-bug-control/#heat-treatment' },
+          { label: 'Aprehend Treatment', description: 'Explore Aprehend as a bed bug treatment option and discuss whether it fits your property and circumstances.', icon: { url: '/images/easypm-aprehend-icon-figma.webp', alt: 'Aprehend biological bed bug control professional logo' }, linkLabel: 'Explore More', linkUrl: '/services/bed-bug-control/#aprehend-treatment' },
+          { label: 'K9 Bed Bug Inspections', description: 'Not sure whether bed bugs are present? Ask about a canine inspection to help investigate your concern.', icon: { url: '/images/easypm-k9-icon-figma.webp', alt: 'Colorful K9 inspection shield with hands' }, linkLabel: 'Explore More', linkUrl: '/services/bed-bug-control/#k9-inspection' },
         ],
       },
       {
         _type: 'twoColTextImageSection', anchorId: 'our-approach',
         title: 'A difficult problem deserves a straightforward conversation',
+        highlightText: 'straightforward conversation',
         description: paragraphs('A bed bug concern can leave you with more questions than answers. What treatment should you choose? What will it cost? What happens next? EasyPM starts by discussing your situation, explaining the available options and helping you make an informed decision.', 'Your privacy matters, too. Our approach to service is discreet and professional, whether the property is your home or your business.'),
         images: [
           { url: '/images/easypm-treatment-photo-figma-watermarked.webp', alt: 'Prototype photo of a pest technician preparing a treatment inside a room' },
           { url: '/images/easypm-section1-treatment-figma-watermarked.webp', alt: 'Prototype photo of a pest technician carrying treatment equipment outdoors' },
+          { url: '/images/easypm-k9-photo-figma.webp', alt: 'K9 inspection dog pictured in the EasyPM Figma prototype' },
         ],
         imagePlacement: 'imageRight', backgroundTheme: 'white',
       },
       estimateStrip,
-      { _type: 'twoColTextImageSection', title: 'Residential and commercial service', description: paragraphs('EasyPM serves homes and business properties in Philadelphia and surrounding areas. Tell us about your location, property and concern to discuss the available options.'), images: [{ url: '/images/easypm-service-area-homes-figma.webp', alt: 'Four residential properties in the EasyPM Figma design' }], imagePlacement: 'imageRight', backgroundTheme: 'darkGreen', ctaLabel: 'Ask About Service', ctaLink: '/contact/' },
+      { _type: 'twoColTextImageSection', title: 'Residential and commercial service', description: paragraphs('EasyPM serves homes and business properties in Philadelphia and surrounding areas. Tell us about your location, property and concern to discuss the available options.'), images: [
+        { url: '/images/easypm-property-1-figma.webp', alt: 'Brick residential building' },
+        { url: '/images/easypm-property-2-figma.webp', alt: 'Single-story home with a front garage' },
+        { url: '/images/easypm-property-3-figma.webp', alt: 'White house with a front porch' },
+        { url: '/images/easypm-property-4-figma.webp', alt: 'Blue house with a front garage' },
+      ], imagePlacement: 'imageRight', backgroundTheme: 'darkGreen', ctaLabel: 'Ask About Service', ctaLink: '/contact/' },
       reasonsCards,
       propertyCards,
     ] as Sections[],
@@ -153,20 +163,20 @@ const pages: Record<string, PageData> = {
       { ...hero('Local bed bug help with a personal approach', 'About EasyPM', 'Easy Pest Management is a locally owned and operated business serving Philadelphia and surrounding areas. We help homeowners and businesses explore bed bug inspection and treatment options.', 'Explore Our Services', '/services/'), primaryCtaLabel: 'Talk to EasyPM', primaryCtaLink: '/contact/', visualVariant: 'figmaHeader', backgroundImage: { url: '/images/easypm-about-hero-figma.webp', alt: 'Quiet bedroom interior from the About EasyPM Figma design' } },
       { _type: 'twoColTextImageSection', title: 'Clear options when you need them', description: paragraphs('A bed bug problem can be stressful to discuss. We want the next step to feel manageable: explain what you have noticed, ask your questions and understand the available options before making a decision.', 'Our services include heat treatment, Aprehend treatment and K9 inspections. We discuss treatment choices and costs with you before you decide whether to proceed.'), videoUrl: 'https://www.youtube.com/embed/PH3786NxmIE', imagePlacement: 'imageRight', backgroundTheme: 'cream' },
       { _type: 'iconGridSection', title: 'What you can expect from the conversation', columns: 3, items: [{ label: 'Space for your questions', description: 'Tell us what concerns you most and ask about the treatment choices available for your property.' }, { label: 'A discreet approach', description: 'We understand that privacy matters when you are dealing with a bed bug concern at home or at work.' }, { label: 'An informed decision', description: 'Discuss the recommended approach and its costs before deciding whether to arrange treatment.' }] },
-      { _type: 'twoColTextImageSection', title: 'Support for residential and commercial properties', description: text('Whether you are calling about your home or a business you manage, your property is the starting point. Tell us where service is needed, what you have noticed and the questions you need answered.'), ctaLabel: 'View Our Services', ctaLink: '/services/', imagePlacement: 'imageRight', backgroundTheme: 'white' },
+      { _type: 'twoColTextImageSection', title: 'Support for residential and commercial properties', description: text('Whether you are calling about your home or a business you manage, your property is the starting point. Tell us where service is needed, what you have noticed and the questions you need answered.'), ctaLabel: 'Explore More', ctaLink: '/services/', imagePlacement: 'imageRight', backgroundTheme: 'white' },
     ] as Sections[],
   },
   blog: {
     title: 'Bed Bug Information and Resources | EasyPM',
     description: 'Find EasyPM bed bug resources and get help with questions about inspection and treatment. Contact us for guidance about your own property.',
     sections: [
-      { ...hero('A place to start with your bed bug questions', 'EasyPM Blog', 'Looking for information before you make a decision? Use this page to explore EasyPM resources and find your way to the inspection or treatment information you need.', 'Ask EasyPM a Question', '/contact/'), primaryCtaLabel: 'Explore Our Services', primaryCtaLink: '/services/', visualVariant: 'figmaHeader', bannerSize: 'compact', backgroundImage: { url: '/images/easypm-home-hero.webp', alt: 'Pest professional in protective gear from the EasyPM Home Figma banner' } },
+      { ...hero('Bed Bug Articles', 'EasyPM Blog', 'Looking for information before you make a decision? Use this page to explore EasyPM resources and find your way to the inspection or treatment information you need.', 'Ask EasyPM a Question', '/contact/'), primaryCtaLabel: 'Explore Our Services', primaryCtaLink: '/services/', visualVariant: 'figmaHeader', bannerSize: 'compact', backgroundImage: { url: '/images/easypm-home-hero.webp', alt: 'Pest professional in protective gear from the EasyPM Home Figma banner' } },
       { _type: 'serviceGridSection', title: 'What would you like to know?', alignment: 'center', layoutStyle: 'stacked', items: [
         { label: 'Your treatment options', description: 'See the services EasyPM offers and the questions to ask when comparing approaches.', icon: { url: '/images/easypm-heat-icon-figma.webp', alt: 'Heat treatment symbol from the EasyPM Figma design' }, linkLabel: 'Explore Our Services', linkUrl: '/services/' },
         { label: 'Inspection options', description: 'If you are unsure whether bed bugs are present, find out about K9 inspections and how to make an inquiry.', icon: { url: '/images/easypm-k9-icon-figma.webp', alt: 'K9 inspection symbol from the EasyPM Figma design' }, linkLabel: 'Read About K9 Inspections', linkUrl: '/services/bed-bug-control/#k9-inspection' },
         { label: 'Service near you', description: 'Check our Philadelphia service area and contact us about your location.', icon: { url: '/images/easypm-map-icon-figma.webp', alt: 'Location marker from the EasyPM Figma design' }, linkLabel: 'View Our Service Area', linkUrl: '/service-area/' },
       ] },
-      { _type: 'blogListSection', title: 'Bed bug articles', description: 'Browse available articles for more information, or contact EasyPM with a question about your property.', emptyStateText: 'There are no articles to show yet. You can still explore our services or contact us with your bed bug questions.', emptyStateCtaLabel: 'Explore Our Services', emptyStateCtaLink: '/services/' },
+      { _type: 'blogListSection', title: 'Bed bug articles', description: 'Browse available articles for more information, or contact EasyPM with a question about your property.', emptyStateText: 'There are no articles to show right now. You can explore our bed bug treatment services or contact us directly with your questions.', emptyStateCtaLabel: 'Explore Our Services', emptyStateCtaLink: '/services/' },
     ] as Sections[],
   },
   contact: {
@@ -201,25 +211,32 @@ const pages: Record<string, PageData> = {
 };
 
 const bedBugServicePage = pages.services;
+const treatmentOverviewSections = bedBugServicePage.sections.slice(1, 4).map((section) => {
+  if (section._type !== 'twoColTextImageSection') return section;
+  if (section.anchorId === 'k9-inspection') {
+    return { ...section, videoUrl: undefined, images: [{ url: '/images/easypm-k9-photo-figma.webp', alt: 'K9 inspection dogs from the EasyPM Figma design' }], bullets: ['Canine Inspection', 'Homes and Businesses', 'A Clear Next Step'] };
+  }
+  return { ...section, bullets: section.anchorId === 'heat-treatment'
+    ? ['Property Preparation', 'Treatment Schedule', 'What to Expect']
+    : ['Treatment Choices', 'Costs and Planning', 'Aftercare Questions'] };
+});
 pages['services/bed-bug-control'] = {
   ...bedBugServicePage,
   title: 'Bed Bug Control in Philadelphia | EasyPM',
   sections: [
-    { ...bedBugServicePage.sections[0], title: 'Bed Bug Control', subtitle: 'Bed Bug Control' },
-    { _type: 'iconGridSection', title: 'Bed bug service for Philadelphia properties', colorTheme: 'darkGreen', columns: 2, items: [
-      { label: 'Locally owned', description: 'Talk directly with EasyPM about service for your property.' },
-      { label: 'Residential and commercial', description: 'Discuss a concern at home or at a business property.' },
-      { label: 'Heat treatment', description: 'Ask whether heat treatment is suitable for the affected areas.' },
-      { label: 'Aprehend treatment', description: 'Compare available treatment approaches before deciding.' },
-      { label: 'K9 inspection', description: 'Ask about inspection when you are unsure whether bed bugs are present.' },
-      { label: 'Clear next steps', description: 'Discuss the plan and costs before arranging service.' },
+    { ...bedBugServicePage.sections[0], title: 'Bed Bug Control', subtitle: 'Bed Bug Control', highlightText: 'Bed Bug' },
+    { _type: 'iconGridSection', title: 'Bed Bug Service for Philadelphia Properties', colorTheme: 'darkGreen', itemStyle: 'card', columns: 3, items: [
+      { label: 'Locally Owned', description: 'Talk directly with EasyPM about service for your property.', icon: { url: '/images/easypm-feature-home.svg', alt: '' } },
+      { label: 'Residential and Commercial', description: 'Discuss a concern at home or at a business property.', icon: { url: '/images/easypm-feature-business.svg', alt: '' } },
+      { label: 'Heat Treatment', description: 'Ask whether heat treatment is suitable for the affected areas.', icon: { url: '/images/easypm-heat-icon-figma.webp', alt: '' } },
+      { label: 'Aprehend Treatment', description: 'Compare available treatment approaches before deciding.', icon: { url: '/images/easypm-aprehend-icon-figma.webp', alt: '' } },
+      { label: 'K9 Inspection', description: 'Ask about inspection when you are unsure whether bed bugs are present.', icon: { url: '/images/easypm-k9-icon-figma.webp', alt: '' } },
+      { label: 'Clear Next Steps', description: 'Discuss the plan and costs before arranging service.', icon: { url: '/images/easypm-feature-next.svg', alt: '' } },
     ] },
     propertyCards,
     estimateStrip,
     { ...processCards, backgroundTheme: 'darkGreen' },
-    ...bedBugServicePage.sections.slice(1, 4).map((section) => section._type === 'twoColTextImageSection' && section.anchorId === 'k9-inspection'
-      ? { ...section, videoUrl: undefined, images: [{ url: '/images/easypm-k9-photo-figma.webp', alt: 'K9 inspection dog from the EasyPM Figma design' }] }
-      : section),
+    ...treatmentOverviewSections,
   ] as Sections[],
 };
 
@@ -227,13 +244,14 @@ pages.services = {
   title: 'Pest Control Services | EasyPM',
   description: 'Explore the EasyPM service pages for bed bug, cockroach and termite control, and contact us about your property.',
   sections: [
-    { ...hero('Pest control services for your property', 'Our Services', 'Explore the service you need and tell EasyPM about your property, location and concern.', 'Call 267-440-7306', phone), primaryCtaLabel: 'Discuss Your Options', primaryCtaLink: '/contact/', visualVariant: 'figmaHeader', backgroundImage: { url: '/images/easypm-services-hero-figma.webp', alt: 'Philadelphia skyline from the EasyPM Figma service frames' } },
+    { ...hero('Pest Control Services for Your Property', 'Our Services', 'Explore the service you need and tell EasyPM about your property, location and concern.', 'Call 267-440-7306', phone), highlightText: 'Pest Control Services', primaryCtaLabel: 'Discuss Your Options', primaryCtaLink: '/contact/', visualVariant: 'figmaHeader', backgroundImage: { url: '/images/easypm-services-hero-figma.webp', alt: 'Philadelphia skyline from the EasyPM Figma service frames' } },
     { _type: 'serviceGridSection', title: 'Explore our services', description: 'Choose a service to see its page, then contact EasyPM about your specific property.', visualVariant: 'floatingThree', items: [
-      { label: 'Bed Bug Control', description: 'Review bed bug heat treatment, Aprehend treatment and K9 inspections.', icon: { url: '/images/easypm-bedbug-service-badge-figma.webp', alt: 'Bed bug control badge with a crossed-out bed bug' }, linkLabel: 'View Bed Bug Control', linkUrl: '/services/bed-bug-control/' },
-      { label: 'Cockroach Control', description: 'See the cockroach control page and ask EasyPM about an inspection or service.', icon: { url: '/images/easypm-cockroach-service-figma.webp', alt: 'Cockroach control badge with a crossed-out cockroach' }, linkLabel: 'View Cockroach Control', linkUrl: '/services/cockroach-control/' },
-      { label: 'Termite Control', description: 'See the termite control page and ask EasyPM about the next step for your property.', icon: { url: '/images/easypm-termite-service-figma.webp', alt: 'Termite control badge with a crossed-out termite' }, linkLabel: 'View Termite Control', linkUrl: '/services/termite-control/' },
+      { label: 'Bed Bug Control', description: 'Review bed bug heat treatment, Aprehend treatment and K9 inspections.', icon: { url: '/images/easypm-bedbug-service-badge-figma.webp', alt: 'Bed bug control badge with a crossed-out bed bug' }, linkLabel: 'Explore More', linkUrl: '/services/bed-bug-control/' },
+      { label: 'Cockroach Control', description: 'See the cockroach control page and ask EasyPM about an inspection or service.', icon: { url: '/images/easypm-cockroach-service-figma.webp', alt: 'Cockroach control badge with a crossed-out cockroach' }, linkLabel: 'Explore More', linkUrl: '/services/cockroach-control/' },
+      { label: 'Termite Control', description: 'See the termite control page and ask EasyPM about the next step for your property.', icon: { url: '/images/easypm-termite-service-figma.webp', alt: 'Termite control badge with a crossed-out termite' }, linkLabel: 'Explore More', linkUrl: '/services/termite-control/' },
     ] },
-    { _type: 'twoColTextImageSection', title: 'Service starts with your property', description: paragraphs('Tell us where service is needed, what you have noticed and any questions you have. EasyPM can discuss the options available before you decide how to proceed.'), images: [{ url: '/images/easypm-service-area-homes-figma.webp', alt: 'Four residential properties from the EasyPM Figma design' }], ctaLabel: 'Contact EasyPM', ctaLink: '/contact/', imagePlacement: 'imageRight', backgroundTheme: 'white' },
+    ...treatmentOverviewSections,
+    { _type: 'twoColTextImageSection', title: 'Service Starts with Your Property', description: paragraphs('Tell us where service is needed, what you have noticed and any questions you have. EasyPM can discuss the options available before you decide how to proceed.'), images: [{ url: '/images/easypm-service-area-homes-figma.webp', alt: 'Four residential properties from the EasyPM Figma design' }], ctaLabel: 'Contact EasyPM', ctaLink: '/contact/', imagePlacement: 'imageRight', backgroundTheme: 'white' },
   ] as Sections[],
 };
 
@@ -241,11 +259,17 @@ pages['services/cockroach-control'] = {
   title: 'Cockroach Control in Philadelphia | EasyPM',
   description: 'Explore EasyPM cockroach control and contact the team about your property in Philadelphia and surrounding areas.',
   sections: [
-    { ...hero('Cockroach Control', 'Cockroach Control', 'If you have seen cockroaches or signs of activity, tell EasyPM what you have noticed and where. We can discuss the next step for your property.'), visualVariant: 'figmaHeader', layoutStyle: 'twoColumn', backgroundImage: { url: '/images/easypm-services-hero-figma.webp', alt: 'Philadelphia skyline used across the EasyPM Figma service frames' }, primaryCtaLabel: 'Contact EasyPM', primaryCtaLink: '/contact/' },
+    { ...hero('Cockroach Control', 'Cockroach Control', 'If you have seen cockroaches or signs of activity, tell EasyPM what you have noticed and where. We can discuss the next step for your property.'), visualVariant: 'figmaHeader', layoutStyle: 'twoColumn', highlightText: 'Cockroach', backgroundImage: { url: '/images/easypm-services-hero-figma.webp', alt: 'Philadelphia skyline used across the EasyPM Figma service frames' }, sideImage: { url: '/images/easypm-cockroach-service-figma.webp', alt: 'Crossed-out cockroach badge from the Figma Cockroach Control frame' }, sideImageFit: 'contain', primaryCtaLabel: 'Contact EasyPM', primaryCtaLink: '/contact/' },
     estimateStrip,
     { ...propertyCards, title: 'Help for your property', subtitle: 'Contact EasyPM about a cockroach concern in your home or business.' },
     reasonsCards,
-    { _type: 'twoColTextImageSection', title: 'Signs of cockroach activity', description: paragraphs('If you have found cockroaches or evidence of activity, make a note of where you saw them and when. Share those details with EasyPM so the team can understand your concern and discuss inspection or service options.'), ctaLabel: 'Ask About Cockroach Control', ctaLink: '/contact/', imagePlacement: 'imageLeft', backgroundTheme: 'white' },
+    { _type: 'twoColTextImageSection', title: 'Signs of Cockroach Activity', highlightText: 'Cockroach Activity', description: paragraphs('If you have found cockroaches or evidence of activity, make a note of where you saw them and when. Share those details with EasyPM so the team can understand your concern and discuss inspection or service options.'), images: [{ url: '/images/easypm-cockroach-activity-figma.webp', alt: 'Cockroaches pictured in the Figma Cockroach Control frame' }], ctaLabel: 'Ask About Cockroach Control', ctaLink: '/contact/', imagePlacement: 'imageLeft', backgroundTheme: 'white' },
+    { _type: 'twoColTextImageSection', title: 'Help for Your Property', description: paragraphs('Every property is different. Share the spaces affected and the questions you have so EasyPM can discuss an appropriate next step.'), images: [
+      { url: '/images/easypm-cockroach-activity-figma.webp', alt: 'Cockroaches on an interior surface' },
+      { url: '/images/easypm-treatment-photo-figma-watermarked.webp', alt: 'Technician preparing treatment in the Figma prototype' },
+      { url: '/images/easypm-about-service-van-figma.webp', alt: 'EasyPM service vehicle in the Figma prototype' },
+      { url: '/images/easypm-service-area-homes-figma.webp', alt: 'Residential properties in the Figma prototype' },
+    ], imagePlacement: 'imageRight', backgroundTheme: 'cream', ctaLabel: 'Discuss Your Concern', ctaLink: '/contact/' },
   ] as Sections[],
 };
 
@@ -253,22 +277,36 @@ pages['services/termite-control'] = {
   title: 'Termite Control in Philadelphia | EasyPM',
   description: 'Explore EasyPM termite control and contact the team about a concern at your property in Philadelphia and surrounding areas.',
   sections: [
-    { ...hero('Termite Control', 'Termite Control', 'If you are concerned about possible termite activity, tell EasyPM what you have noticed and where. Ask about the next step for your property.'), visualVariant: 'figmaHeader', layoutStyle: 'twoColumn', backgroundImage: { url: '/images/easypm-services-hero-figma.webp', alt: 'Philadelphia skyline used across the EasyPM Figma service frames' }, primaryCtaLabel: 'Contact EasyPM', primaryCtaLink: '/contact/' },
+    { ...hero('Termite Control', 'Termite Control', 'If you are concerned about possible termite activity, tell EasyPM what you have noticed and where. Ask about the next step for your property.'), visualVariant: 'figmaHeader', layoutStyle: 'twoColumn', highlightText: 'Termite', backgroundImage: { url: '/images/easypm-services-hero-figma.webp', alt: 'Philadelphia skyline used across the EasyPM Figma service frames' }, sideImage: { url: '/images/easypm-termite-service-figma.webp', alt: 'Crossed-out termite badge from the Figma Termite Control frame' }, sideImageFit: 'contain', primaryCtaLabel: 'Contact EasyPM', primaryCtaLink: '/contact/' },
     processCards,
     estimateStrip,
-    { _type: 'twoColTextImageSection', title: 'When you suspect termites', description: paragraphs('Tell EasyPM where you have noticed possible termite activity or damage. Share your property type and location so we can discuss an appropriate next step.'), ctaLabel: 'Ask About Termite Control', ctaLink: '/contact/', imagePlacement: 'imageLeft', backgroundTheme: 'white' },
-    { _type: 'twoColTextImageSection', title: 'A closer look at the property', description: paragraphs('Wood damage and other signs can have different causes. Explain what you have seen and ask EasyPM about inspection before making treatment decisions.'), ctaLabel: 'Contact EasyPM', ctaLink: '/contact/', imagePlacement: 'imageRight', backgroundTheme: 'white' },
+    { _type: 'twoColTextImageSection', title: 'When You Suspect Termites', description: paragraphs('Tell EasyPM where you have noticed possible termite activity or damage. Share your property type and location so we can discuss an appropriate next step.'), images: [{ url: '/images/easypm-termite-activity-figma.webp', alt: 'Termites on wood from the Figma Termite Control frame' }], ctaLabel: 'Ask About Termite Control', ctaLink: '/contact/', imagePlacement: 'imageLeft', backgroundTheme: 'white' },
+    { _type: 'twoColTextImageSection', title: 'A Closer Look at the Property', description: paragraphs('Wood damage and other signs can have different causes. Explain what you have seen and ask EasyPM about inspection before making treatment decisions.'), images: [
+      { url: '/images/easypm-termite-gallery-1-figma.webp', alt: 'Termites on wood in the Figma frame' },
+      { url: '/images/easypm-termite-gallery-2-figma.webp', alt: 'Damaged wood trim in the Figma frame' },
+      { url: '/images/easypm-termite-gallery-3-figma.webp', alt: 'Wooden cabinet hinge detail in the Figma frame' },
+      { url: '/images/easypm-termite-gallery-4-figma.webp', alt: 'Termites on a branch in the Figma frame' },
+    ], ctaLabel: 'Contact EasyPM', ctaLink: '/contact/', imagePlacement: 'imageRight', backgroundTheme: 'white' },
   ] as Sections[],
 };
 
 const serviceAreaHero = pages['service-area'].sections[0];
+const serviceAreaCoverage = pages['service-area'].sections[1];
+const serviceAreaFaq = pages['service-area'].sections[3];
 pages['service-area'] = {
   ...pages['service-area'],
   sections: [
-    serviceAreaHero,
+    serviceAreaHero._type === 'heroSection' ? { ...serviceAreaHero, highlightText: 'Philadelphia' } : serviceAreaHero,
     estimateStrip,
-    { _type: 'twoColTextImageSection', title: 'Bed bug help in the Philadelphia area', description: paragraphs('EasyPM serves Philadelphia and surrounding areas. Contact us with your city or ZIP code to confirm whether service is available at your property.', 'Tell us whether the inquiry is for a home or a business and describe what you have noticed.'), images: [{ url: '/images/easypm-service-area-homes-figma.webp', alt: 'Residential properties pictured in the EasyPM Service Area Figma frame' }], imagePlacement: 'imageRight', backgroundTheme: 'cream', ctaLabel: 'Check Availability', ctaLink: '/contact/' },
+    { _type: 'twoColTextImageSection', title: 'Bed Bug Help in the Philadelphia Area', highlightText: 'Philadelphia Area', description: paragraphs('EasyPM serves Philadelphia and surrounding areas. Contact us with your city or ZIP code to confirm whether service is available at your property.', 'Tell us whether the inquiry is for a home or a business and describe what you have noticed.'), images: [
+      { url: '/images/easypm-property-1-figma.webp', alt: 'Brick residential building' },
+      { url: '/images/easypm-property-2-figma.webp', alt: 'Home with front garage' },
+      { url: '/images/easypm-property-3-figma.webp', alt: 'White house with front porch' },
+      { url: '/images/easypm-property-4-figma.webp', alt: 'Blue house with front garage' },
+    ], imagePlacement: 'imageRight', backgroundTheme: 'cream', ctaLabel: 'Check Availability', ctaLink: '/contact/' },
+    serviceAreaCoverage,
     processCards,
+    serviceAreaFaq,
   ] as Sections[],
 };
 
@@ -276,11 +314,15 @@ const aboutHero = pages['about-us'].sections[0];
 pages['about-us'] = {
   ...pages['about-us'],
   sections: [
-    aboutHero,
+    aboutHero._type === 'heroSection' ? { ...aboutHero, highlightText: 'Personal Approach' } : aboutHero,
     estimateStrip,
-    { _type: 'twoColTextImageSection', title: 'Our mission', description: paragraphs('A pest concern can be stressful. EasyPM helps people in Philadelphia and surrounding areas understand the available inspection and treatment options and choose a next step for their property.'), images: [{ url: '/images/easypm-about-service-van-figma.webp', alt: 'EasyPM service vehicle from the Figma design' }], imagePlacement: 'imageRight', backgroundTheme: 'cream', ctaLabel: 'Talk to EasyPM', ctaLink: '/contact/' },
+    { _type: 'twoColTextImageSection', title: 'Our Mission', description: paragraphs('A pest concern can be stressful. EasyPM helps people in Philadelphia and surrounding areas understand the available inspection and treatment options and choose a next step for their property.'), images: [{ url: '/images/easypm-about-service-van-figma.webp', alt: 'EasyPM service vehicle from the Figma design' }], imagePlacement: 'imageRight', backgroundTheme: 'darkGreen', ctaLabel: 'Talk to EasyPM', ctaLink: '/contact/' },
     propertyCards,
-    reasonsCards,
+    { _type: 'iconGridSection', title: 'Our Core Values', columns: 3, itemStyle: 'card', items: [
+      { label: 'Space for Your Questions', description: 'Ask about the treatment choices available for your property.', icon: { url: '/images/easypm-feature-options.svg', alt: '' } },
+      { label: 'A Discreet Approach', description: 'Privacy matters when you are dealing with a pest concern.', icon: { url: '/images/easypm-feature-business.svg', alt: '' } },
+      { label: 'An Informed Decision', description: 'Understand the recommendation and costs before deciding.', icon: { url: '/images/easypm-feature-next.svg', alt: '' } },
+    ] },
   ] as Sections[],
 };
 

@@ -204,6 +204,7 @@ export type TwoColTextImageSection = BaseSection & {
   images?: Array<{
     url?: string;
     alt?: string;
+    crop?: { top: number; bottom: number; left: number; right: number };
   }>;
   image?: {
     url?: string;

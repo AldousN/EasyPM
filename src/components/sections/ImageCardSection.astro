@@ -1,6 +1,6 @@
 ---
 import type { ProcessSection } from '../../types/sections';
-import { splitHighlight } from '../../utils/highlightTitle';
+import { splitHighlight, titleCaseHeading } from '../../utils/highlightTitle';
 import { portableTextToHtml } from '../../lib/portableText';
 import { buildSanityImageUrl, optimizeImageUrl } from '../../lib/imageOptimizer';
 import { normalizeInternalHref } from '../../lib/links';
@@ -8,7 +8,7 @@ import CtaSubtitle from '../ui/CtaSubtitle.astro';
 import FigmaCardGrid from './FigmaCardGrid.astro';
 
 const props = Astro.props as ProcessSection;
-const titleSegments = splitHighlight(props.title, props.highlightText);
+const titleSegments = splitHighlight(titleCaseHeading(props.title), props.highlightText);
 const rawBackgroundTheme = props.backgroundTheme ?? 'darkGreen';
 const backgroundTheme =
   (
@@ -116,7 +116,7 @@ const imageSizesAttr =
       {props.steps.map((step) => {
         const cardTitle = (step.label || step.title || '').trim();
         const highlightText = step.titleHighlight?.trim();
-        const titleSegments = splitHighlight(cardTitle, highlightText);
+        const titleSegments = splitHighlight(titleCaseHeading(cardTitle), highlightText);
         const stepImage = step.image;
         const fallbackImageUrl = stepImage?.asset?.url ?? stepImage?.url;
         const useSanityBuilder = Boolean(stepImage?.asset?._ref || stepImage?.asset?._id);
@@ -172,7 +172,7 @@ const imageSizesAttr =
               )}
               {showDivider && <hr class="my-3 w-full border-t border-slate-200/80" />}
               {itemTitle && (
-                <h4 class="text-lg font-semibold text-(--color-primary)">{itemTitle}</h4>
+                <h4 class="text-lg font-semibold text-(--color-primary)">{titleCaseHeading(itemTitle)}</h4>
               )}
               {step.itemDescription && (
                 <div class={`prose prose-slate max-w-none text-base ${theme.cardHeading} ${cardTextAlignment === 'text-center' ? 'mx-auto' : ''}`} set:html={portableTextToHtml(step.itemDescription)} />

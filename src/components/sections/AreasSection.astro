@@ -30,8 +30,8 @@ const themeName =
 const isDarkSection = themeName === 'oliveGreen' || themeName === 'darkGreen';
 const isCreamSection = themeName === 'cream';
 
-import { splitHighlight } from '../../utils/highlightTitle';
-const titleSegments = props.title ? splitHighlight(props.title, (props as any).highlightText) : [];
+import { splitHighlight, titleCaseHeading } from '../../utils/highlightTitle';
+const titleSegments = props.title ? splitHighlight(titleCaseHeading(props.title), (props as any).highlightText) : [];
 
 const totalCities = stateGroups.reduce(
   (count, group) => count + (group.areas?.length ?? 0),
@@ -76,7 +76,7 @@ const totalCities = stateGroups.reduce(
             {group.stateTitle && (
               <div class="bbg-areas-state-head">
                 <span class="bbg-areas-state-rule" aria-hidden="true"></span>
-                <h3 class="bbg-areas-state-title">{group.stateTitle}</h3>
+                <h3 class="bbg-areas-state-title">{titleCaseHeading(group.stateTitle)}</h3>
                 <span class="bbg-areas-state-rule" aria-hidden="true"></span>
               </div>
             )}
@@ -152,22 +152,26 @@ const totalCities = stateGroups.reduce(
     font-size: 12px;
     letter-spacing: 0.18em;
     text-transform: uppercase;
-    color: var(--emergency);
+    color: var(--button-text);
     margin-bottom: 18px;
+    background: var(--purple-primary);
+    padding: 4px 14px;
+    border-radius: 999px;
   }
 
-  .bbg-areas-dark .bbg-areas-eyebrow { color: var(--sand-pale); }
+  .bbg-areas-dark .bbg-areas-eyebrow { color: var(--button-text); }
 
   .bbg-areas-eyebrow-dot {
     width: 7px;
     height: 7px;
     border-radius: 50%;
     background: var(--emergency);
-    box-shadow: 0 0 0 3px rgba(202, 30, 53, 0.18);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--purple-primary) 18%, transparent);
+    display: none;
   }
 
   .bbg-areas-dark .bbg-areas-eyebrow-dot {
-    box-shadow: 0 0 0 3px rgba(202, 30, 53, 0.32);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--purple-primary) 32%, transparent);
   }
 
   .bbg-areas-title {
@@ -254,7 +258,7 @@ const totalCities = stateGroups.reduce(
     background: linear-gradient(
       to right,
       transparent 0%,
-      rgba(94, 127, 58, 0.32) 50%,
+      color-mix(in srgb, var(--purple-primary) 32%, transparent) 50%,
       transparent 100%
     );
   }
@@ -350,7 +354,7 @@ const totalCities = stateGroups.reduce(
     border-color: var(--green-primary);
     box-shadow:
       0 1px 0 rgba(29, 29, 29, 0.02),
-      0 12px 24px -16px rgba(94, 127, 58, 0.32);
+      0 12px 24px -16px color-mix(in srgb, var(--purple-primary) 32%, transparent);
   }
 
   .bbg-areas-cream .bbg-areas-card {
@@ -377,7 +381,7 @@ const totalCities = stateGroups.reduce(
     width: 32px;
     height: 32px;
     border-radius: 50%;
-    background: rgba(94, 127, 58, 0.12);
+    background: color-mix(in srgb, var(--purple-primary) 12%, transparent);
     color: var(--green-deep);
     display: inline-flex;
     align-items: center;

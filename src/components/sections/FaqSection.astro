@@ -46,8 +46,8 @@ const sectionBgClass = (
 )[colorTheme] ?? '';
 
 const heading = (props.heading ?? props.title ?? '').trim();
-import { splitHighlight } from '../../utils/highlightTitle';
-const headingSegments = heading ? splitHighlight(heading, (props as any).highlightText) : [];
+import { splitHighlight, titleCaseHeading } from '../../utils/highlightTitle';
+const headingSegments = heading ? splitHighlight(titleCaseHeading(heading), (props as any).highlightText) : [];
 const description = (props.description ?? '').trim();
 const bottomText = (props.bottomText ?? '').trim();
 const buttonLabel = (props.buttonLabel ?? '').trim();
@@ -57,7 +57,7 @@ const ctaHref = buttonLabel && buttonLink ? buttonLink : undefined;
 const faqs = (props.faqs ?? [])
   .map((faq) => ({
     _key: faq._key,
-    question: (faq.question ?? '').trim(),
+    question: titleCaseHeading((faq.question ?? '').trim()),
     answer: (faq.answer ?? '').trim(),
   }))
   .filter((faq) => faq.question || faq.answer);
@@ -254,13 +254,13 @@ const rightColumnFaqs = faqs.filter((_, index) => index % 2 === 1);
   }
 
   .bbg-faq-item:hover {
-    border-color: rgba(94, 127, 58, 0.32);
+    border-color: color-mix(in srgb, var(--purple-primary) 32%, transparent);
     box-shadow: 0 8px 20px -12px rgba(29, 29, 29, 0.12);
   }
 
   .bbg-faq-item[open] {
-    border-color: rgba(94, 127, 58, 0.4);
-    box-shadow: 0 12px 28px -16px rgba(94, 127, 58, 0.22);
+    border-color: color-mix(in srgb, var(--purple-primary) 40%, transparent);
+    box-shadow: 0 12px 28px -16px color-mix(in srgb, var(--purple-primary) 22%, transparent);
     background: var(--warm-white);
   }
 
@@ -321,7 +321,7 @@ const rightColumnFaqs = faqs.filter((_, index) => index % 2 === 1);
     width: 36px;
     height: 36px;
     border-radius: 50%;
-    background: rgba(94, 127, 58, 0.1);
+    background: color-mix(in srgb, var(--purple-primary) 10%, transparent);
     color: var(--green-deep);
     display: inline-flex;
     align-items: center;

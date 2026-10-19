@@ -8,7 +8,7 @@
  */
 import type { IconGridSection } from '../../types/sections';
 import { portableTextToHtml } from '../../lib/portableText';
-import { splitHighlight } from '../../utils/highlightTitle';
+import { splitHighlight, titleCaseHeading } from '../../utils/highlightTitle';
 import { buildSanityImageUrl, optimizeImageUrl, type SanityImageSource } from '../../lib/imageOptimizer';
 import { normalizeInternalHref } from '../../lib/links';
 
@@ -45,7 +45,7 @@ const buildIconUrl = (
 };
 
 const props = Astro.props as IconGridSection;
-const titleSegments = splitHighlight(props.title, props.highlightText);
+const titleSegments = splitHighlight(titleCaseHeading(props.title), props.highlightText);
 const isVertical = props.layout !== 'horizontal';
 const itemStyle = props.itemStyle ?? 'flat';
 const isCard = itemStyle === 'card';
@@ -172,9 +172,12 @@ const sectionTopHref = normalizeInternalHref(props.ctaLink);
                 )}
 
                 <div class="bbg-icon-content">
-                  <TitleTag class="bbg-icon-item-title">{item.label}</TitleTag>
+                  <div class="bbg-icon-title-row">
+                    {!iconUrl && <span class="bbg-icon-title-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10" /></svg></span>}
+                    <TitleTag class="bbg-icon-item-title">{titleCaseHeading(item.label)}</TitleTag>
+                  </div>
                   {item.subtitle && (
-                    <SubtitleTag class="bbg-icon-item-subtitle">{item.subtitle}</SubtitleTag>
+                    <SubtitleTag class="bbg-icon-item-subtitle">{titleCaseHeading(item.subtitle)}</SubtitleTag>
                   )}
                   {item.description && (
                     <p class="bbg-icon-item-desc">{item.description}</p>
@@ -241,6 +244,11 @@ const sectionTopHref = normalizeInternalHref(props.ctaLink);
 </section>
 
 <style>
+  .bbg-icon-title-row { display: flex; align-items: center; gap: 10px; }
+  .bbg-icon-title-mark { display: inline-grid; width: 26px; height: 26px; flex: none; place-items: center; border-radius: 50%; background: var(--purple-hover); color: #fff; }
+  .bbg-icon-title-mark svg { width: 16px; height: 16px; }
+  .bbg-icon-grid.is-vertical .bbg-icon-card.is-card .bbg-icon-title-row { justify-content: center; }
+  :is(.bbg-icon-dark, .bbg-icon-olive) .bbg-icon-card.is-flat .bbg-icon-title-mark { border: 1px solid var(--purple-soft); }
   /* === Section variants ============================================ */
   .bbg-icon-light { background: var(--warm-white); }
   .bbg-icon-cream { background: var(--sand-pale); }
@@ -266,16 +274,15 @@ const sectionTopHref = normalizeInternalHref(props.ctaLink);
   .bbg-icon-eyebrow {
     display: inline-flex;
     align-items: center;
-    gap: 10px;
+    padding: 4px 14px;
+    border-radius: 999px;
+    background: var(--purple-primary);
     font-family: var(--font-heading);
     font-weight: 700;
     font-size: 12px;
-    letter-spacing: 0.18em;
+    letter-spacing: 0.11em;
     text-transform: uppercase;
-    /* Darker red variant so the 12px uppercase eyebrow passes WCAG AA on
-       every light section bg (white, cream, sand, sage). The brand red
-       --emergency only hit 4.75:1 on white and below 4.5:1 on cream. */
-    color: var(--emergency-text);
+    color: var(--button-text);
     margin-bottom: 18px;
   }
 
@@ -288,19 +295,15 @@ const sectionTopHref = normalizeInternalHref(props.ctaLink);
      So we use white (not sand-pale) for both dark and olive variants,
      with !important so a cascade quirk can't ever let the red token
      through. */
-  :is(.bbg-icon-dark, .bbg-icon-olive) .bbg-icon-eyebrow { color: #ffffff !important; }
+  :is(.bbg-icon-dark, .bbg-icon-olive) .bbg-icon-eyebrow { color: var(--button-text); }
 
   /* Red accent dot per brand direction — decorative, not a CTA. */
   .bbg-icon-eyebrow-dot {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: var(--emergency);
-    box-shadow: 0 0 0 3px rgba(202, 30, 53, 0.18);
+    display: none;
   }
 
   :is(.bbg-icon-dark, .bbg-icon-olive) .bbg-icon-eyebrow-dot {
-    box-shadow: 0 0 0 3px rgba(202, 30, 53, 0.32);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--purple-primary) 32%, transparent);
   }
 
   .bbg-icon-title {
@@ -326,7 +329,7 @@ const sectionTopHref = normalizeInternalHref(props.ctaLink);
 
   /* On dark sections, fall back to sand-pale (red on green-deep fails). */
   :is(.bbg-icon-dark, .bbg-icon-olive) .bbg-icon-leaf {
-    color: var(--sand-pale);
+    color: #fff;
   }
 
   .bbg-icon-desc {
@@ -353,7 +356,7 @@ const sectionTopHref = normalizeInternalHref(props.ctaLink);
     margin: 0;
     padding: 0;
     display: grid;
-    gap: 16px;
+    gap: 24px;
     grid-auto-rows: auto;
   }
 
@@ -430,7 +433,7 @@ const sectionTopHref = normalizeInternalHref(props.ctaLink);
     background: #ffffff;
     border-radius: 32px;
     padding: 28px;
-    border: 1px solid rgba(15, 23, 42, 0.08);
+    border: 1px solid var(--purple-soft);
     box-shadow: 0 25px 40px -12px rgba(15, 23, 42, 0.08);
     transition:
       transform 240ms cubic-bezier(0.2, 0.8, 0.2, 1),
@@ -485,7 +488,7 @@ const sectionTopHref = normalizeInternalHref(props.ctaLink);
      shadow so they don't disappear into the dark surface. */
   :is(.bbg-icon-dark, .bbg-icon-olive) .bbg-icon-card.is-card {
     background: #ffffff;
-    border-color: rgba(15, 23, 42, 0.06);
+    border-color: var(--purple-soft);
     box-shadow: 0 28px 56px -16px rgba(15, 23, 42, 0.45);
   }
 
@@ -523,7 +526,7 @@ const sectionTopHref = normalizeInternalHref(props.ctaLink);
   :is(.bbg-icon-dark, .bbg-icon-olive) .bbg-icon-card.is-card .bbg-icon-item-desc,
   :is(.bbg-icon-dark, .bbg-icon-olive) .bbg-icon-card.is-card .bbg-icon-benefits li { color: var(--ink-soft); }
   :is(.bbg-icon-dark, .bbg-icon-olive) .bbg-icon-card.is-card .bbg-icon-bullet {
-    background: rgba(94, 127, 58, 0.14);
+    background: color-mix(in srgb, var(--purple-primary) 14%, transparent);
     box-shadow: none;
     color: var(--green-deep);
   }
@@ -807,7 +810,7 @@ const sectionTopHref = normalizeInternalHref(props.ctaLink);
     width: 18px;
     height: 18px;
     border-radius: 50%;
-    background: rgba(200, 69, 69, 0.10);
+    background: color-mix(in srgb, var(--purple-primary) 10%, transparent);
     box-shadow: inset 0 0 0 1.5px var(--emergency);
     color: var(--emergency);
     display: inline-flex;

@@ -1,6 +1,6 @@
 ---
 import type { ServiceAreaSection } from '../../types/sections';
-import { splitHighlight } from '../../utils/highlightTitle';
+import { splitHighlight, titleCaseHeading } from '../../utils/highlightTitle';
 import { buildSanityImageUrl, optimizeImageUrl, type SanityImageSource } from '../../lib/imageOptimizer';
 import { normalizeInternalHref } from '../../lib/links';
 import CtaSubtitle from '../ui/CtaSubtitle.astro';
@@ -33,7 +33,7 @@ const serviceAreaImageUrl = imageSource
     }) || optimizeImageUrl(imageUrl, { width: 1100, fit: 'max' })
   : optimizeImageUrl(imageUrl, { width: 1100, fit: 'max' });
 const embedLooksLikeImage = isImageUrl(props.mapEmbed);
-const titleSegments = splitHighlight(props.title, props.highlightText);
+const titleSegments = splitHighlight(titleCaseHeading(props.title), props.highlightText);
 const highlightClass = 'bbg-sa-leaf';
 const ctaSubtitlePlacement = props.ctaSubtitlePlacement ?? 'below';
 const ctaSubtitleHeadingLevel = props.ctaSubtitleHeadingLevel ?? 'h3';
@@ -64,7 +64,7 @@ const hasVisual = Boolean(imageUrl || props.mapEmbed);
       </div>
 
       {props.communities?.length > 0 && (
-        <ul class="grid gap-x-6 gap-y-3 grid-cols-2 sm:grid-cols-2" role="list">
+        <ul class="bbg-sa-communities grid gap-x-6 gap-y-3 grid-cols-2 sm:grid-cols-2" role="list">
           {props.communities.map((community) => {
             const href = resolveLink(community.link);
             const label = (
@@ -75,7 +75,7 @@ const hasVisual = Boolean(imageUrl || props.mapEmbed);
 
             return (
               <li class="flex items-start gap-2 sm:gap-3">
-                <span class="mt-1 inline-flex h-5 w-5 sm:h-6 sm:w-6 items-center justify-center rounded-full bg-[--sand-pale] text-[--green-deep]">
+                <span class="bbg-sa-location-icon mt-1 inline-flex h-5 w-5 sm:h-6 sm:w-6 items-center justify-center rounded-full">
                   <svg viewBox="0 0 24 24" aria-hidden="true" class="h-3.5 w-3.5 sm:h-4 sm:w-4 fill-current">
                     <path d="M12 2C8.14 2 5 5.14 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.86-3.14-7-7-7Zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5Z" />
                   </svg>
@@ -150,6 +150,7 @@ const hasVisual = Boolean(imageUrl || props.mapEmbed);
         ) : (
           <iframe
             src={mapEmbedUrl}
+            title={props.title ? `Map: ${props.title}` : 'Philadelphia service area map'}
             class="aspect-4/3 w-full rounded-4xl"
             loading="lazy"
             allowfullscreen
@@ -181,7 +182,13 @@ const hasVisual = Boolean(imageUrl || props.mapEmbed);
   .bbg-sa-grid {
     max-width: 100%;
     min-width: 0;
+    padding: clamp(24px, 4vw, 48px);
+    border: 1px solid var(--purple-soft);
+    border-radius: 28px;
+    background: var(--purple-soft);
   }
+  .bbg-sa-communities { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+  .bbg-sa-location-icon { flex: none; background: #ede9fe; color: var(--purple-hover); }
 
   /* Force any map/image inside the right column to stay within bounds. */
   .bbg-sa-grid :global(img),

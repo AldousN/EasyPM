@@ -1,10 +1,10 @@
 ---
 import type { ContactSection } from '../../types/sections';
 import { normalizeInternalHref } from '../../lib/links';
-import { splitHighlight } from '../../utils/highlightTitle';
+import { splitHighlight, titleCaseHeading } from '../../utils/highlightTitle';
 
 const props = Astro.props as ContactSection;
-const titleSegments = props.title ? splitHighlight(props.title, props.highlightText) : [];
+const titleSegments = props.title ? splitHighlight(titleCaseHeading(props.title), props.highlightText) : [];
 const hasHeader = Boolean(props.title) || Boolean(props.subtitle && props.subtitle.trim().length > 0);
 const linksColumns = props.linksColumns ?? 3;
 const linksGridClass =
@@ -42,7 +42,7 @@ const linksGridClass =
       {/* Left Column: Location Details */}
       <div class="space-y-8 text-center md:text-left">
         {props.locationTitle && (
-          <h3 class="text-2xl font-semibold text-white">{props.locationTitle}</h3>
+          <h3 class="text-2xl font-semibold text-white">{titleCaseHeading(props.locationTitle)}</h3>
         )}
         <ul class="space-y-4">
           {/* Company Name */}
@@ -93,7 +93,7 @@ const linksGridClass =
       {props.linksSection && props.linksSection.length > 0 && (
         <div class="space-y-8 text-center md:text-left">
           {props.linksSubtitle && (
-            <h3 class="text-2xl font-semibold text-white">{props.linksSubtitle}</h3>
+            <h3 class="text-2xl font-semibold text-white">{titleCaseHeading(props.linksSubtitle)}</h3>
           )}
           <ul class={`grid ${linksGridClass} gap-3 md:gap-4`} role="list">
             {props.linksSection.map((item) => (

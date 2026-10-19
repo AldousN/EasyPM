@@ -5,7 +5,7 @@
  */
 import type { CtaSection } from '../../types/sections';
 import { portableTextToHtml } from '../../lib/portableText';
-import { splitHighlight } from '../../utils/highlightTitle';
+import { splitHighlight, titleCaseHeading } from '../../utils/highlightTitle';
 import { normalizeInternalHref } from '../../lib/links';
 import { buildSanityImageUrl } from '../../lib/imageOptimizer';
 
@@ -15,7 +15,7 @@ const primaryCtaLabel = props.primaryButton?.label?.trim() || props.ctaLabel?.tr
 const primaryCtaHref = normalizeInternalHref(props.primaryButton?.link ?? props.ctaLink);
 const secondaryCtaLabel = props.secondaryButton?.label?.trim() || '';
 const secondaryCtaHref = normalizeInternalHref(props.secondaryButton?.link);
-const headingSegments = splitHighlight(props.heading, props.highlightText);
+const headingSegments = splitHighlight(titleCaseHeading(props.heading), props.highlightText);
 const eyebrowText = props.eyebrow?.trim();
 const subtitleText = props.ctaSubtitle?.trim();
 const bannerUrl = buildSanityImageUrl(props.backgroundImage, { width: 2400, quality: 82, format: 'webp', fit: 'max' });
@@ -148,16 +148,18 @@ const hasAnyCta = hasPrimaryCta || hasSecondaryCta;
   .figma-estimate-strip.is-fullwidth,
   .figma-estimate-strip.is-fullwidth.bbg-cta-h-compact {
     padding: 22px 0;
-    background: linear-gradient(100deg, #6751da, #8e35e9);
+    background: var(--purple-primary);
     color: #fff;
+    border-block: 1px solid rgba(255, 255, 255, .35);
+    box-shadow: var(--button-shadow-sm);
   }
   .figma-estimate-strip .bbg-cta-panel.is-twocol { flex-direction: row; justify-content: space-between; align-items: center; gap: 24px; }
   .figma-estimate-strip .bbg-cta-panel.is-twocol .bbg-cta-content { flex: 1; }
   .figma-estimate-strip .bbg-cta-panel.is-twocol .bbg-cta-actions { flex: none; align-items: flex-end; }
-  .figma-estimate-strip .bbg-cta-title { margin: 0; color: #fff; font-size: clamp(24px, 2.8vw, 36px); font-weight: 700; line-height: 1.1; text-transform: uppercase; }
-  .figma-estimate-strip .bbg-cta-primary { min-width: 128px; padding: 9px 22px; border: 1px solid rgba(255,255,255,.9); border-radius: 5px; background: transparent; box-shadow: none; color: #fff; }
+  .figma-estimate-strip .bbg-cta-title { margin: 0; color: #fff; font-size: clamp(24px, 2.8vw, 36px); font-weight: 700; line-height: 1.1; text-transform: none; }
+  .figma-estimate-strip .bbg-cta-primary { min-width: 128px; padding: 9px 22px; border: 1px solid rgba(255,255,255,.9); border-radius: 5px; background: var(--purple-primary); box-shadow: var(--button-shadow-sm); color: var(--button-text); }
   .figma-estimate-strip .bbg-cta-arrow { display: none; }
-  .figma-estimate-strip .bbg-cta-primary:hover { background: #fff; color: #6230b5; }
+  .figma-estimate-strip .bbg-cta-primary:is(:hover, :focus-visible) { background: var(--purple-hover); color: var(--button-text); box-shadow: var(--button-shadow-md); }
   @media (max-width: 879px) {
     .figma-estimate-strip .bbg-cta-panel.is-twocol { flex-direction: column; align-items: stretch; text-align: center; }
     .figma-estimate-strip .bbg-cta-panel.is-twocol .bbg-cta-actions { align-items: stretch; }
@@ -297,7 +299,7 @@ const hasAnyCta = hasPrimaryCta || hasSecondaryCta;
     color: var(--warm-white);
   }
   .bbg-cta.has-banner-image {
-    background-image: linear-gradient(90deg, rgba(48, 30, 116, .28), rgba(101, 39, 180, .18)), var(--bbg-cta-background);
+    background-image: linear-gradient(90deg, rgba(0, 0, 0, .28), rgba(0, 0, 0, .18)), var(--bbg-cta-background);
     background-position: center;
     background-size: cover;
     color: #fff;
@@ -351,10 +353,10 @@ const hasAnyCta = hasPrimaryCta || hasSecondaryCta;
     font-weight: 600;
   }
   .bbg-cta-on-dark.is-fullwidth .bbg-cta-eyebrow {
-    color: var(--sand-pale);
+    color: var(--button-text);
   }
   .bbg-cta-on-dark.is-fullwidth .bbg-cta-eyebrow-dot {
-    box-shadow: 0 0 0 3px rgba(202, 30, 53, 0.32);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--purple-primary) 32%, transparent);
   }
   .bbg-cta-on-dark.is-fullwidth .bbg-cta-body {
     color: rgba(247, 245, 241, 0.92);
@@ -368,9 +370,9 @@ const hasAnyCta = hasPrimaryCta || hasSecondaryCta;
   }
   .bbg-cta-on-dark.is-fullwidth .bbg-cta-secondary:hover,
   .bbg-cta-on-dark.is-fullwidth .bbg-cta-secondary:focus-visible {
-    background: var(--warm-white);
-    color: var(--ink-black);
-    border-color: var(--warm-white);
+    background: var(--purple-hover);
+    color: var(--button-text);
+    border-color: transparent;
   }
 
   @media (max-width: 720px) {
@@ -386,31 +388,29 @@ const hasAnyCta = hasPrimaryCta || hasSecondaryCta;
   .bbg-cta-eyebrow {
     display: inline-flex;
     align-items: center;
-    gap: 10px;
+    padding: 4px 14px;
+    border-radius: 999px;
+    background: var(--purple-primary);
     font-family: var(--font-heading);
     font-weight: 700;
     font-size: 12px;
-    letter-spacing: 0.18em;
+    letter-spacing: 0.11em;
     text-transform: uppercase;
-    color: var(--emergency);
+    color: var(--button-text);
     margin-bottom: 16px;
   }
 
   .bbg-panel-dark .bbg-cta-eyebrow {
-    color: var(--sand-pale);
+    color: var(--button-text);
   }
 
   /* Red accent dot per brand direction. */
   .bbg-cta-eyebrow-dot {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: var(--emergency);
-    box-shadow: 0 0 0 3px rgba(202, 30, 53, 0.18);
+    display: none;
   }
 
   .bbg-panel-dark .bbg-cta-eyebrow-dot {
-    box-shadow: 0 0 0 3px rgba(202, 30, 53, 0.32);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--purple-primary) 32%, transparent);
   }
 
   /* === Title ======================================================== */
@@ -496,9 +496,7 @@ const hasAnyCta = hasPrimaryCta || hasSecondaryCta;
     flex-wrap: wrap;
   }
 
-  /* Bigger primary CTA — this is the dominant action on the section so
-     it deserves real visual weight. Larger padding, larger font, larger
-     arrow, heavier shadow than the global .btn-primary. */
+  /* Larger CTA geometry retains the shared button palette and elevation. */
   .bbg-cta-primary {
     min-height: 78px;
     padding: 1.5rem 3rem;
@@ -506,8 +504,9 @@ const hasAnyCta = hasPrimaryCta || hasSecondaryCta;
     font-weight: 700;
     letter-spacing: -0.015em;
     gap: 0.9rem;
-    box-shadow: 0 14px 32px rgba(47, 191, 113, 0.42);
+    box-shadow: var(--button-shadow-sm);
   }
+  .bbg-cta-primary:is(:hover, :focus-visible) { box-shadow: var(--button-shadow-md); }
 
   @media (max-width: 720px) {
     .bbg-cta-primary {
@@ -536,7 +535,7 @@ const hasAnyCta = hasPrimaryCta || hasSecondaryCta;
     font-size: 0.92rem;
   }
 
-  /* Ghost button on dark panel: light border, inverts on hover */
+  /* Secondary actions retain the shared hover color on dark panels. */
   .bbg-panel-dark .bbg-cta-secondary {
     color: var(--warm-white);
     border-color: rgba(247, 245, 241, 0.32);
@@ -544,12 +543,10 @@ const hasAnyCta = hasPrimaryCta || hasSecondaryCta;
 
   .bbg-panel-dark .bbg-cta-secondary:hover,
   .bbg-panel-dark .bbg-cta-secondary:focus-visible {
-    background: var(--warm-white);
-    color: var(--ink-black);
-    border-color: var(--warm-white);
+    background: var(--purple-hover);
+    color: var(--button-text);
+    border-color: transparent;
   }
-  /* .bbg-cta-primary inherits the global heat-orange .btn-primary
-     style — the orange against green-darker pops as intended. */
 
   .bbg-cta-arrow {
     width: 14px;

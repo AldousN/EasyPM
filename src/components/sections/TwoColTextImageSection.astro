@@ -1,7 +1,7 @@
 ---
 import type { TwoColTextImageSection } from "../../types/sections";
 import { portableTextToHtml } from "../../lib/portableText";
-import { splitHighlight } from "../../utils/highlightTitle";
+import { splitHighlight, titleCaseHeading } from "../../utils/highlightTitle";
 import {
   buildSanityImageUrl,
   optimizeImageUrl,
@@ -171,13 +171,21 @@ const mutedClass = theme.subtitle;
 const subtitleClass = theme.isDark ? "subtitle-dark" : "subtitle";
 const highlightClass = theme.highlight;
 const galleryCount = gallery.length;
+const localCropStyle = (image: { url: string; source?: SanityImageSource }) => {
+  if (!image.url.startsWith('/') || !image.source?.crop) return undefined;
+  const { left, right, top, bottom } = image.source.crop;
+  const visibleWidth = 1 - left - right;
+  const visibleHeight = 1 - top - bottom;
+  if (visibleWidth <= 0 || visibleHeight <= 0) return undefined;
+  return `width:${100 / visibleWidth}%;height:${100 / visibleHeight}%;left:${-100 * left / visibleWidth}%;top:${-100 * top / visibleHeight}%;max-width:none;max-height:none;object-fit:fill`;
+};
 const videoEmbedUrl = getYouTubeEmbedUrl(props.videoUrl);
 const hasMedia = Boolean(videoEmbedUrl || galleryCount > 0);
 const descriptionHtml = props.description
   ? portableTextToHtml(props.description, theme.isDark)
   : "";
 const descriptionColorClass = theme.isDark ? "prose-invert text-white/90" : "text-[--color-text]";
-const titleSegments = props.title ? splitHighlight(props.title, props.highlightText) : [];
+const titleSegments = props.title ? splitHighlight(titleCaseHeading(props.title), props.highlightText) : [];
 const hasPrimaryCta = Boolean(props.ctaLabel && ctaHref);
 const hasSecondaryCta = Boolean(props.secondaryCtaLabel && secondaryCtaHref);
 const isSingleImage = galleryCount === 1;
@@ -185,7 +193,7 @@ const containSingleImage = isSingleImage && props.mediaFit === 'contain';
 
 const galleryClasses = (() => {
   if (galleryCount === 1) return "grid gap-4";
-  if (galleryCount >= 3) return "grid gap-4 md:grid-cols-2 md:grid-rows-2";
+  if (galleryCount >= 3) return `grid gap-6 md:grid-cols-2 md:grid-rows-2 ${galleryCount === 3 ? 'is-stack' : 'is-four'}`;
   return "grid gap-4";
 })();
 
@@ -289,6 +297,7 @@ const getImageSpanClasses = (index: number) => {
     return "bbg-twocol-single rounded-[28px] w-full aspect-[4/5]";
   }
   if (galleryCount >= 3) {
+    if (galleryCount === 4) return 'rounded-[24px] aspect-[213/100]';
     if (index === 0) {
       return `rounded-[32px] aspect-[4/3] md:row-span-2 md:self-center md:aspect-square ${!imageLeft ? "md:order-2 md:col-start-2" : ""}`;
     }
@@ -361,7 +370,7 @@ const getImageSpanClasses = (index: number) => {
                       </svg>
                     </span>
                   )}
-                  <span>{bullet}</span>
+                  <span>{titleCaseHeading(bullet)}</span>
                 </li>
               ))}
             </ul>
@@ -391,7 +400,7 @@ const getImageSpanClasses = (index: number) => {
       {videoEmbedUrl ? <YouTubeEmbed url={props.videoUrl!} /> :
         (
           <div
-            class={`w-full bbg-twocol-gallery ${galleryCount >= 3 ? "is-multi" : "is-single"} ${galleryClasses} ${galleryCount >= 3 ? "md:auto-rows-max md:items-center" : ""}`}
+            class={`w-full bbg-twocol-gallery ${galleryCount >= 3 ? "is-multi" : "is-single"} ${containSingleImage ? 'is-contained' : ''} ${galleryClasses} ${galleryCount >= 3 ? "md:auto-rows-max md:items-center" : ""}`}
           >
             {gallery.slice(0, 4).map((image, index) => (
               <div
@@ -440,6 +449,7 @@ const getImageSpanClasses = (index: number) => {
                       width={800}
                       height={600}
                       class={`absolute inset-0 h-full w-full object-cover ${objectPositionClass}`}
+                      style={localCropStyle(image)}
                       loading="lazy"
                       decoding="async"
                     />
@@ -455,6 +465,15 @@ const getImageSpanClasses = (index: number) => {
 </section>
 
 <style>
+  .bbg-twocol-gallery.is-multi { column-gap: 24px; row-gap: 24px; }
+  .bbg-twocol-gallery.is-four { align-items: stretch; }
+  @media (min-width: 768px) {
+    .bbg-twocol-gallery.is-stack > div { box-shadow: 0 12px 32px rgba(25, 15, 45, .18); transition: transform 240ms ease-out, box-shadow 240ms ease-out; }
+    .bbg-twocol-gallery.is-stack > div:first-child { z-index: 10; transform: translateY(-8px) scale(1.05); box-shadow: 0 22px 44px rgba(25, 15, 45, .26); }
+    .bbg-twocol-gallery.is-stack > div:nth-child(2) { z-index: 2; transform: translateY(10px) rotate(-2deg) scale(.96); }
+    .bbg-twocol-gallery.is-stack > div:nth-child(3) { z-index: 1; transform: translateY(-10px) rotate(2deg) scale(.96); }
+  }
+  @media (prefers-reduced-motion: reduce) { .bbg-twocol-gallery.is-stack > div { transition: none; } }
   /* === Section grid ===============================================
      Replaces the previous Tailwind grid + space-y-5 utility chain.
      space-y-5 was silently dropping under Tailwind v4 in scoped Astro
@@ -471,7 +490,15 @@ const getImageSpanClasses = (index: number) => {
     grid-template-columns: 1fr;
     gap: 32px;
     align-items: center;
+    padding: clamp(24px, 3vw, 48px);
+    border: 1px solid #e3dcec;
+    border-radius: 28px;
+    background: #fff;
+    box-shadow: 0 12px 36px rgba(15, 23, 42, 0.051);
   }
+  :is(.bbg-twocol-theme-darkgreen, .bbg-twocol-theme-olive) .bbg-twocol-grid { background: #ffffff08; border-color: #ffffff40; }
+  :is(.bbg-twocol-theme-darkgreen, .bbg-twocol-theme-olive) .section-description { color: #fff; font-weight: 700; }
+  .bbg-twocol-gallery.is-single > div { border-radius: 24px; box-shadow: 0 20px 42px rgba(15, 23, 42, 0.149); }
   .bbg-twocol-grid.has-no-image { grid-template-columns: minmax(0, 1fr); }
   .bbg-twocol-grid.has-no-image .bbg-twocol-content { max-width: 850px; }
 
@@ -589,7 +616,8 @@ const getImageSpanClasses = (index: number) => {
     padding: 0;
     margin: 0;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    flex-wrap: wrap;
     gap: 10px;
   }
 
@@ -600,7 +628,13 @@ const getImageSpanClasses = (index: number) => {
     font-family: var(--font-body);
     font-size: clamp(15px, 1.1vw, 16px);
     line-height: 1.55;
+    padding: 8px 12px;
+    border: 1px solid var(--purple-soft);
+    border-radius: 999px;
+    color: var(--purple-hover);
+    font-weight: 700;
   }
+  :is(.bbg-twocol-theme-darkgreen, .bbg-twocol-theme-olive) .bbg-twocol-bullet { border-color: var(--purple-soft); color: #fff; }
 
   .bbg-twocol-bullet-mark {
     display: inline-flex;
@@ -615,9 +649,9 @@ const getImageSpanClasses = (index: number) => {
     width: 24px;
     height: 24px;
     border-radius: 999px;
-    background: var(--sand-pale);
-    border: 2px solid var(--emergency);
-    color: var(--green-deep);
+    background: transparent;
+    border: 1px solid var(--purple-primary);
+    color: var(--purple-hover);
   }
 
   .bbg-twocol-bullet-mark.is-check svg {
@@ -632,7 +666,7 @@ const getImageSpanClasses = (index: number) => {
     margin-top: 9px; /* align with cap height of body text */
     border-radius: 999px;
     background: var(--emergency);
-    box-shadow: 0 0 0 3px rgba(200, 69, 69, 0.18);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--purple-primary) 18%, transparent);
   }
 
   /* Mobile: bullets always left-align (defensive — TwoCol normally
@@ -690,7 +724,7 @@ const getImageSpanClasses = (index: number) => {
        3+ images on mobile become a swipeable row. The container's
        Tailwind grid utilities are explicitly nuked here so the flex
        row + horizontal overflow can take over. */
-    .bbg-twocol-gallery.is-multi {
+    .bbg-twocol-gallery.is-stack {
       display: flex !important;
       flex-direction: row !important;
       flex-wrap: nowrap !important;
@@ -710,14 +744,14 @@ const getImageSpanClasses = (index: number) => {
       max-width: calc(100% + 32px);
     }
 
-    .bbg-twocol-gallery.is-multi::-webkit-scrollbar {
+    .bbg-twocol-gallery.is-stack::-webkit-scrollbar {
       display: none;
       width: 0;
       height: 0;
     }
 
     /* Each image cell becomes a fixed-width scroll snap card. */
-    .bbg-twocol-gallery.is-multi > div {
+    .bbg-twocol-gallery.is-stack > div {
       flex: 0 0 78% !important;
       width: 78% !important;
       max-width: 78% !important;
@@ -736,7 +770,7 @@ const getImageSpanClasses = (index: number) => {
     }
 
     /* Images inside fill the card. */
-    .bbg-twocol-gallery.is-multi > div :global(img) {
+    .bbg-twocol-gallery.is-stack > div :global(img) {
       position: absolute;
       inset: 0;
       width: 100% !important;
@@ -747,10 +781,10 @@ const getImageSpanClasses = (index: number) => {
 
     /* Subtle right-edge fade — visual cue that more content is to the
        right. Sits on the section container, fades the last 24px. */
-    .bbg-twocol-section:has(.bbg-twocol-gallery.is-multi) .bbg-twocol-grid > div:last-child {
+    .bbg-twocol-section:has(.bbg-twocol-gallery.is-stack) .bbg-twocol-grid > div:last-child {
       position: relative;
     }
-    .bbg-twocol-section:has(.bbg-twocol-gallery.is-multi) .bbg-twocol-grid > div:last-child::after {
+    .bbg-twocol-section:has(.bbg-twocol-gallery.is-stack) .bbg-twocol-grid > div:last-child::after {
       content: '';
       position: absolute;
       top: 0;
@@ -777,5 +811,15 @@ const getImageSpanClasses = (index: number) => {
       aspect-ratio: 4 / 3 !important;
       max-height: none;
     }
+  }
+  .bbg-twocol-gallery.is-four { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+  .bbg-twocol-gallery.is-four > div { min-width: 0; max-height: none; aspect-ratio: 16 / 10; }
+  .bbg-twocol-gallery.is-contained > div.bbg-twocol-single { aspect-ratio: 4 / 3 !important; background: var(--purple-soft); box-shadow: none; }
+  .bbg-twocol-gallery.is-contained img { width: min(65%, 280px); height: min(65%, 280px); margin: auto; padding: 0; object-fit: contain; }
+  .bbg-twocol-highlight-dark { color: #fff; }
+  @media (max-width: 767px) {
+    .bbg-twocol-gallery.is-four { width: 100%; margin: 0; padding: 0; overflow: visible; scroll-snap-type: none; }
+    .bbg-twocol-gallery.is-four > div { width: auto; max-width: none; min-width: 0; flex: none; aspect-ratio: 16 / 10 !important; }
+    .bbg-twocol-section:has(.bbg-twocol-gallery.is-four) .bbg-twocol-grid > div:last-child::after { display: none; }
   }
 </style>

@@ -1,12 +1,12 @@
 ---
 import type { BlogListSection } from "../../types/sections";
-import { splitHighlight } from "../../utils/highlightTitle";
+import { splitHighlight, titleCaseHeading } from "../../utils/highlightTitle";
 import { fetchAllBlogPosts } from "../../lib/queries/allBlogPosts";
 import { optimizeImageUrl } from "../../lib/imageOptimizer";
 import { normalizeInternalHref } from "../../lib/links";
 
 const props = Astro.props as BlogListSection;
-const titleSegments = splitHighlight(props.title, props.highlightText);
+const titleSegments = splitHighlight(titleCaseHeading(props.title), props.highlightText);
 const rawPosts = await fetchAllBlogPosts();
 const normalizeSlug = (slug: any) =>
   typeof slug === "string" ? slug : (slug?.current ?? "");
@@ -83,12 +83,14 @@ posts.sort(
 
 const initialPosts = posts.slice(0, resolvedPostsPerPage);
 const initialTotalPages = Math.ceil(posts.length / resolvedPostsPerPage);
+const categoryNames = [...new Set<string>(allPosts.flatMap((post: any) => Array.isArray(post.categories) ? post.categories.filter(Boolean) : []))];
 ---
 
-<section class="section-inner-lg w-full bg-white">
+<section class="blog-list-section" data-blog-list data-posts-per-page={resolvedPostsPerPage} data-filter-category={props.filterCategory ?? ''}>
+  <div class="blog-list-inner">
   {
     props.title && (
-      <h2 class="mb-8 text-4xl font-bold text-slate-900">
+      <h2 class="blog-list-title">
         {titleSegments.map((segment) =>
           segment.highlight ? (
             <span class="bbg-blog-leaf">{segment.text}</span>
@@ -101,9 +103,13 @@ const initialTotalPages = Math.ceil(posts.length / resolvedPostsPerPage);
   }
   {
     props.description && (
-      <p class="mb-8 text-lg text-slate-600">{props.description}</p>
+      <p class="blog-list-description">{props.description}</p>
     )
   }
+  <div class="blog-category-chips" role="group" aria-label="Filter articles by category">
+    <button class="blog-category-chip" type="button" data-category-chip="" aria-pressed={!props.filterCategory}>All Articles</button>
+    {categoryNames.map((category) => <button class="blog-category-chip" type="button" data-category-chip={category} aria-pressed={props.filterCategory === category}>{category}</button>)}
+  </div>
   <div class={allPosts.length === 0 ? 'hidden' : 'mb-8 rounded-lg border border-slate-200 bg-slate-50 p-4 sm:p-6'}>
     <div
       class="grid gap-2 sm:gap-3 md:gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6"
@@ -197,7 +203,7 @@ const initialTotalPages = Math.ceil(posts.length / resolvedPostsPerPage);
       {
         initialPosts.map((post, index) => (
           <article
-            class="group overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-all duration-300 hover:shadow-lg hover:scale-105 cursor-pointer"
+            class="group overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-all duration-300 hover:shadow-lg hover:-translate-y-1 cursor-pointer"
             onclick={`window.location.href='/blog/${post.slug}/'`}
           >
             {post.optimizedImage && (
@@ -225,7 +231,7 @@ const initialTotalPages = Math.ceil(posts.length / resolvedPostsPerPage);
                 {post.categories &&
                   post.categories.length > 0 &&
                   post.categories.map((category: string) => (
-                    <span class="inline-block rounded-full bg-[--sand-pale] px-3 py-1 text-xs font-semibold text-[--green-deep]">
+                    <span class="blog-post-category">
                       {category}
                     </span>
                   ))}
@@ -239,11 +245,11 @@ const initialTotalPages = Math.ceil(posts.length / resolvedPostsPerPage);
                   </span>
                 )}
               </div>
-              <h2 class="mb-2 text-xl font-semibold text-slate-900 line-clamp-2">
+              <h3 class="mb-2 text-xl font-semibold text-slate-900 line-clamp-2">
                 <a href={`/blog/${post.slug}/`} class="hover:text-[--green-primary]">
                   {post.title}
                 </a>
-              </h2>
+              </h3>
               {post.excerpt && <p class="mb-4 text-slate-600 line-clamp-2">{post.excerpt}</p>}
               {post.tags && post.tags.length > 0 && (
                 <div class="mb-4 flex flex-wrap gap-2">
@@ -263,11 +269,19 @@ const initialTotalPages = Math.ceil(posts.length / resolvedPostsPerPage);
 
     <div
       id="noResults"
-      class={allPosts.length === 0 ? "rounded-xl border border-slate-200 bg-slate-50 p-8 text-center" : "hidden rounded-xl border border-slate-200 bg-slate-50 p-8 text-center"}
+      class:list={['blog-empty-state', { hidden: allPosts.length > 0 }]}
+      role="status"
     >
-      <p class="text-slate-600">{allPosts.length === 0 ? props.emptyStateText : "No posts found matching your filters."}</p>
+      <div class="blog-empty-icon" aria-hidden="true">
+        <svg width="32" height="32" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z" />
+          <path d="M14 3v6h6M8 13h8M8 17h5" />
+        </svg>
+      </div>
+      <h3 class="blog-empty-title">{allPosts.length === 0 ? 'No Articles Published Yet' : 'No Matching Articles'}</h3>
+      <p class="blog-empty-description">{allPosts.length === 0 ? props.emptyStateText : "No posts found matching your filters."}</p>
       {allPosts.length === 0 && props.emptyStateCtaLabel && emptyStateCtaHref && (
-        <a href={emptyStateCtaHref} class="btn-primary mt-6 inline-flex">{props.emptyStateCtaLabel}</a>
+        <a href={emptyStateCtaHref} class="blog-empty-cta">{props.emptyStateCtaLabel}</a>
       )}
     </div>
 
@@ -287,7 +301,7 @@ const initialTotalPages = Math.ceil(posts.length / resolvedPostsPerPage);
           Array.from({ length: initialTotalPages }, (_, i) => i + 1).map(
             (pageNum) => (
               <button
-                class={`px-3 py-1 rounded-lg text-sm font-medium ${pageNum === 1 ? "bg-yellow-400 text-slate-900 font-semibold" : "border border-slate-300 text-slate-700 hover:bg-slate-50"}`}
+                class={`px-3 py-1 rounded-lg text-sm font-medium ${pageNum === 1 ? "blog-page-current" : "border border-slate-300 text-slate-700 hover:bg-slate-50"}`}
                 disabled={pageNum === 1}
               >
                 {pageNum}
@@ -305,12 +319,34 @@ const initialTotalPages = Math.ceil(posts.length / resolvedPostsPerPage);
       </button>
     </div>
 
-    {
-    }
+  </div>
   </div>
 </section>
 
 <style>
+  .blog-list-section { width: 100%; padding-block: 64px; background: rgba(248, 250, 252, .5); }
+  .blog-list-inner { width: min(calc(100% - 2 * var(--site-gutter)), var(--site-content-width)); min-width: 0; margin-inline: auto; }
+  .blog-list-title { margin: 0 0 12px; color: #0f172a; font: 800 clamp(30px, 3.2vw, 40px)/1.15 var(--font-heading); letter-spacing: -.025em; }
+  .blog-list-description { max-width: 672px; margin: 0 0 32px; color: #475569; font: 400 clamp(16px, 1.5vw, 18px)/1.6 var(--font-body); }
+  .blog-category-chips { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 40px; }
+  .blog-category-chip { min-height: 44px; padding: 10px 24px; border: 1px solid var(--purple-soft); border-radius: 999px; background: transparent; color: var(--purple-hover); font: 700 14px/1.3 var(--font-heading); cursor: pointer; transition: background-color 200ms ease-out, color 200ms ease-out, box-shadow 200ms ease-out; }
+  .blog-category-chip:hover { background: var(--purple-soft); }
+  .blog-category-chip[aria-pressed="true"] { background: var(--purple-primary); border-color: var(--purple-primary); color: var(--button-text); font-weight: 700; box-shadow: var(--button-shadow-sm); opacity: 1; filter: none; text-shadow: none; }
+  .blog-category-chip[aria-pressed="true"]:is(:hover, :focus-visible) { background: var(--purple-hover); border-color: var(--purple-hover); color: #fff; }
+  .blog-category-chip:focus-visible { outline: 3px solid var(--purple-primary); outline-offset: 3px; }
+  .blog-list-section :global(.blog-post-category) { display: inline-block; padding: 4px 12px; border-radius: 999px; background: var(--purple-primary); color: var(--button-text); font-size: 12px; font-weight: 700; }
+  .blog-list-section :global(.blog-page-current) { background: var(--purple-primary); color: var(--button-text); font-weight: 700; }
+  .blog-empty-state { max-width: 896px; margin: 24px auto; padding: 40px; border: 1px solid #e2e8f0cc; border-radius: 24px; background: #fff; box-shadow: 0 10px 15px -3px rgba(15, 23, 42, .1), 0 4px 6px -4px rgba(15, 23, 42, .1); text-align: center; }
+  .blog-empty-icon { display: grid; place-items: center; width: 64px; height: 64px; margin: 0 auto 20px; border-radius: 16px; background: var(--purple-soft); color: var(--purple-primary); }
+  .blog-empty-title { margin: 0 0 8px; color: #0f172a; font: 700 20px/1.3 var(--font-heading); }
+  .blog-empty-description { max-width: 448px; margin: 0 auto 32px; color: #475569; font: 400 16px/1.65 var(--font-body); }
+  .blog-empty-cta { display: inline-flex; align-items: center; justify-content: center; min-height: 50px; max-width: 100%; padding: 14px 32px; border-radius: 999px; background: var(--purple-primary); color: var(--button-text); font: 700 14px/1.35 var(--font-heading); text-decoration: none; box-shadow: var(--button-shadow-md); opacity: 1; filter: none; text-shadow: none; transition: transform 200ms ease-out, background-color 200ms ease-out, box-shadow 200ms ease-out; }
+  .blog-empty-cta:is(:hover, :focus-visible) { transform: translateY(-2px); background: var(--purple-hover); color: var(--button-text); box-shadow: 0 20px 25px -5px rgba(15, 23, 42, .1), 0 8px 10px -6px rgba(15, 23, 42, .1); }
+  .blog-empty-cta:focus-visible { outline: 3px solid var(--purple-primary); outline-offset: 4px; }
+  .blog-empty-cta:active { transform: scale(.95); }
+  @media (min-width: 1024px) { .blog-list-section { padding-block: 96px; } .blog-empty-state { padding: 64px; } .blog-empty-cta { font-size: 16px; } }
+  @media (max-width: 400px) { .blog-empty-state { padding: 40px 24px; } .blog-empty-cta { padding-inline: 24px; } }
+  @media (prefers-reduced-motion: reduce) { .blog-category-chip, .blog-empty-cta { transition: none; } .blog-empty-cta:is(:hover, :focus-visible, :active) { transform: none; } }
   /* Unified highlight — red italic, matches hero. */
   .bbg-blog-leaf {
     display: inline-block;
@@ -324,7 +360,6 @@ const initialTotalPages = Math.ceil(posts.length / resolvedPostsPerPage);
   is:inline
   define:vars={{
     posts: JSON.stringify(allPosts),
-    postsPerPageValue: resolvedPostsPerPage,
   }}
 >
   const normalizeSlug = (slug) =>
@@ -332,8 +367,8 @@ const initialTotalPages = Math.ceil(posts.length / resolvedPostsPerPage);
   const allPosts = JSON.parse(posts)
     .map((p) => ({ ...p, slug: normalizeSlug(p.slug) }))
     .filter((p) => Boolean(p.slug));
-  const defaultPostsPerPage =
-    Number(postsPerPageValue) > 0 ? Number(postsPerPageValue) : 9;
+  const blogSection = document.querySelector('[data-blog-list]');
+  const defaultPostsPerPage = Math.max(1, Number(blogSection?.getAttribute('data-posts-per-page')) || 9);
   let postsPerPage = defaultPostsPerPage;
   let currentPage = 1;
   let filteredPosts = [...allPosts];
@@ -370,6 +405,12 @@ const initialTotalPages = Math.ceil(posts.length / resolvedPostsPerPage);
     option.textContent = cat;
     categoryFilter.appendChild(option);
   });
+  categoryFilter.value = blogSection?.getAttribute('data-filter-category') || '';
+  const categoryChips = document.querySelectorAll('[data-category-chip]');
+  categoryChips.forEach((chip) => chip.addEventListener('click', () => {
+    categoryFilter.value = chip.dataset.categoryChip || '';
+    filterAndSort();
+  }));
 
   function renderPosts(posts) {
     postsContainer.innerHTML = "";
@@ -394,7 +435,7 @@ const initialTotalPages = Math.ceil(posts.length / resolvedPostsPerPage);
 
       const article = document.createElement("article");
       article.className =
-        "group overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-all duration-300 hover:shadow-lg hover:scale-105 cursor-pointer";
+        "group overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-all duration-300 hover:shadow-lg hover:-translate-y-1 cursor-pointer";
 
       const imageHTML = post.optimizedImage
         ? `<div class="relative aspect-[2/1] w-full overflow-hidden bg-slate-100">
@@ -407,7 +448,7 @@ const initialTotalPages = Math.ceil(posts.length / resolvedPostsPerPage);
           ? post.categories
               .map(
                 (category) =>
-                  `<span class="inline-block rounded-full bg-[--sand-pale] px-3 py-1 text-xs font-semibold text-[--green-deep]">${category}</span>`,
+                  `<span class="blog-post-category">${category}</span>`,
               )
               .join("")
           : "";
@@ -470,7 +511,7 @@ const initialTotalPages = Math.ceil(posts.length / resolvedPostsPerPage);
       const btn = document.createElement("button");
       btn.className = `px-3 py-1 rounded-lg text-sm font-medium ${
         i === currentPage
-          ? "bg-yellow-400 text-slate-900 font-semibold"
+          ? "blog-page-current"
           : "border border-slate-300 text-slate-700 hover:bg-slate-50"
       }`;
       btn.textContent = i;
@@ -486,6 +527,7 @@ const initialTotalPages = Math.ceil(posts.length / resolvedPostsPerPage);
 
   function filterAndSort() {
     let filtered = [...allPosts];
+    categoryChips.forEach((chip) => chip.setAttribute('aria-pressed', String((chip.dataset.categoryChip || '') === categoryFilter.value)));
 
     // Filter by category
     if (categoryFilter.value) {

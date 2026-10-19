@@ -19,11 +19,11 @@ import type { LeadFormField, LeadFormSection } from '../../types/sections';
 import { siteProfile } from '../../data/siteProfile';
 import { portableTextToHtml } from '../../lib/portableText';
 import { buildSanityImageUrl, optimizeImageUrl } from '../../lib/imageOptimizer';
-import { splitHighlight } from '../../utils/highlightTitle';
+import { splitHighlight, titleCaseHeading } from '../../utils/highlightTitle';
 
 const props = Astro.props as LeadFormSection;
 const HeadingTag = props.headingLevel === 'h1' ? 'h1' : 'h2';
-const titleSegments = props.title ? splitHighlight(props.title, (props as any).highlightText) : [];
+const titleSegments = props.title ? splitHighlight(titleCaseHeading(props.title), (props as any).highlightText) : [];
 
 const rawBackgroundTheme = props.backgroundTheme ?? 'cream';
 const backgroundTheme =
@@ -236,8 +236,9 @@ const turnstileEnabled =
           class="btn-primary bbg-form-submit"
           data-role="submit-btn"
           disabled={!formIsAvailable}
+          aria-describedby={!formIsAvailable ? `${formId}_availability` : undefined}
         >
-          <span data-default-label>{!formIsAvailable ? 'Form delivery is not configured' : props.submitLabel}</span>
+          <span data-default-label>{props.submitLabel}</span>
           <span data-loading-label class="bbg-form-loading">Sending&hellip;</span>
           <svg viewBox="0 0 24 24" class="bbg-form-arrow" aria-hidden="true">
             <path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
@@ -245,7 +246,7 @@ const turnstileEnabled =
         </button>
 
       </form>
-      {!formIsAvailable && <p class="bbg-form-preview-note">Online inquiries are not available yet. Call <a href={phoneHref}>{siteProfile.primaryPhoneFormatted}</a> to reach EasyPM.</p>}
+      {!formIsAvailable && <p class="bbg-form-preview-note" id={`${formId}_availability`}>Online inquiries are not available yet. Call <a href={phoneHref}>{siteProfile.primaryPhoneFormatted}</a> to reach EasyPM.</p>}
       </>
       ) : (
         <div class="bbg-form-phone-fallback">
@@ -296,22 +297,23 @@ const turnstileEnabled =
     font-size: 12px;
     letter-spacing: 0.18em;
     text-transform: uppercase;
-    /* --emergency (#C84545) only hits ~4.3:1 on warm-white at 12px so
-       Lighthouse flagged the form eyebrow. --emergency-text (#A82929)
-       is the AA-safe red token reserved exactly for this case (~6.2:1
-       on cream, ~7.4:1 on white). */
-    color: var(--emergency-text);
+    /* Solid brand purple with pure white text preserves badge contrast. */
+    color: var(--button-text);
     margin-bottom: 18px;
+    background: var(--purple-primary);
+    padding: 4px 14px;
+    border-radius: 999px;
   }
 
-  .bbg-form-dark .bbg-form-eyebrow { color: var(--sand-pale); }
+  .bbg-form-dark .bbg-form-eyebrow { color: var(--button-text); }
 
   .bbg-form-eyebrow-dot {
     width: 7px;
     height: 7px;
     border-radius: 50%;
     background: var(--emergency);
-    box-shadow: 0 0 0 3px rgba(202, 30, 53, 0.18);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--purple-primary) 18%, transparent);
+    display: none;
   }
 
   .bbg-form-title {
@@ -477,7 +479,7 @@ const turnstileEnabled =
   .bbg-form-field input:hover,
   .bbg-form-field textarea:hover,
   .bbg-form-field select:hover {
-    border-color: rgba(94, 127, 58, 0.45);
+    border-color: color-mix(in srgb, var(--purple-primary) 45%, transparent);
   }
 
   .bbg-form-field input:focus,
@@ -485,7 +487,7 @@ const turnstileEnabled =
   .bbg-form-field select:focus {
     outline: none;
     border-color: var(--green-deep);
-    box-shadow: 0 0 0 4px rgba(94, 127, 58, 0.16);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--purple-primary) 16%, transparent);
   }
 
   .bbg-form-field textarea {
@@ -583,7 +585,7 @@ const turnstileEnabled =
   }
 
   .bbg-form-submit[disabled] {
-    opacity: 0.7;
+    opacity: 1;
     cursor: not-allowed;
   }
 
@@ -625,37 +627,37 @@ const turnstileEnabled =
      with the heading and contact details inside the same form panel. */
   .bbg-form-figma { background-color: #f7f7f7; background-image: var(--bbg-form-art-left), var(--bbg-form-art-right); background-position: left center, right center; background-size: min(100%, 1878px) auto, min(44vw, 844px) auto; background-repeat: no-repeat; }
   .bbg-form-figma .bbg-wrap {
-    width: min(100% - 40px, 860px);
+    width: min(calc(100% - 2 * var(--site-gutter)), 860px);
     background: #fff;
-    border: 2px solid #8051dc;
+    border: 2px solid var(--purple-primary);
     border-radius: 7px;
     box-shadow: 10px 12px 0 rgba(41, 41, 41, .2);
     padding: clamp(28px, 4vw, 64px);
   }
   .bbg-form-figma .bbg-form-head { margin-bottom: 32px; }
-  .bbg-form-figma .bbg-form-eyebrow { color: #6b39c2; }
-  .bbg-form-figma .bbg-form-eyebrow-dot { background: #8051dc; box-shadow: 0 0 0 3px #8051dc25; }
-  .bbg-form-figma .bbg-form-title { color: #6b39c2; font-size: clamp(29px, 3vw, 42px); line-height: 1.16; }
+  .bbg-form-figma .bbg-form-eyebrow { color: var(--button-text); }
+  .bbg-form-figma .bbg-form-eyebrow-dot { background: var(--purple-primary); box-shadow: 0 0 0 3px var(--purple-soft); }
+  .bbg-form-figma .bbg-form-title { color: var(--purple-primary); font-size: clamp(29px, 3vw, 42px); line-height: 1.16; }
   .bbg-form-figma .bbg-form-sub { margin-top: 12px; }
   .bbg-form-figma .bbg-form-card { max-width: none; border: 0; border-radius: 0; box-shadow: none; padding: 0; }
   .bbg-form-contact-details { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 24px; text-align: left; }
-  .bbg-form-contact-detail { display: flex; align-items: center; gap: 11px; min-height: 74px; padding: 13px 15px; border: 1px solid #c7adfa; border-radius: 8px; color: #392b54; background: #faf8ff; text-decoration: none; }
-  .bbg-form-contact-detail svg { flex: 0 0 23px; width: 23px; height: 23px; color: #7440d1; }
+  .bbg-form-contact-detail { display: flex; align-items: center; gap: 11px; min-height: 74px; padding: 13px 15px; border: 1px solid var(--purple-soft); border-radius: 8px; color: #334155; background: var(--purple-soft); text-decoration: none; }
+  .bbg-form-contact-detail svg { flex: 0 0 23px; width: 23px; height: 23px; color: var(--purple-primary); }
   .bbg-form-contact-detail span { display: grid; gap: 2px; min-width: 0; }
-  .bbg-form-contact-detail small { color: #5a4a70; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; }
-  .bbg-form-contact-detail strong { color: #392b54; font-size: 14px; line-height: 1.3; overflow-wrap: anywhere; }
-  .bbg-form-contact-detail:is(a):hover { border-color: #6b39c2; background: #f3edff; }
-  .bbg-form-contact-detail:is(a):focus-visible { outline: 3px solid #6b39c2; outline-offset: 3px; }
-  .bbg-form-figma .bbg-form-field label { color: #4b3a62; }
+  .bbg-form-contact-detail small { color: #334155; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; }
+  .bbg-form-contact-detail strong { color: #334155; font-size: 14px; line-height: 1.3; overflow-wrap: anywhere; }
+  .bbg-form-contact-detail:is(a):hover { border-color: var(--purple-primary); background: var(--purple-soft); }
+  .bbg-form-contact-detail:is(a):focus-visible { outline: 3px solid var(--purple-primary); outline-offset: 3px; }
+  .bbg-form-figma .bbg-form-field label { color: #334155; }
   .bbg-form-figma .bbg-form-field input,
   .bbg-form-figma .bbg-form-field select,
-  .bbg-form-figma .bbg-form-field textarea { border: 1px solid #9c6de9; border-radius: 7px; background: #fff; }
-  .bbg-form-figma .bbg-form-field :is(input, select, textarea):focus { border-color: #6b39c2; box-shadow: 0 0 0 3px #8051dc35; }
-  .bbg-form-figma .bbg-form-submit { justify-self: start; align-self: flex-start; width: auto; min-width: 175px; min-height: 48px; border-radius: 7px; background: #7440d1; }
-  .bbg-form-figma .bbg-form-submit:hover { background: #5c2cb5; }
+  .bbg-form-figma .bbg-form-field textarea { border: 1px solid var(--purple-primary); border-radius: 7px; background: #fff; }
+  .bbg-form-figma .bbg-form-field :is(input, select, textarea):focus { border-color: var(--purple-primary); box-shadow: 0 0 0 3px var(--purple-soft); }
+  .bbg-form-figma .bbg-form-submit { justify-self: start; align-self: flex-start; width: auto; min-width: 175px; min-height: 48px; border-radius: 999px; background: var(--purple-primary); color: #fff; font-weight: 700; }
+  .bbg-form-figma .bbg-form-submit:hover { background: var(--purple-hover); color: #fff; }
   @media (max-width: 600px) {
     .bbg-form-figma { background-size: 130% auto, 76% auto; background-position: left top, right bottom; }
-    .bbg-form-figma .bbg-wrap { width: min(100% - 28px, 860px); padding: 28px 20px; }
+    .bbg-form-figma .bbg-wrap { width: min(calc(100% - 2 * var(--site-gutter)), 860px); padding: 28px 20px; }
     .bbg-form-contact-details { grid-template-columns: 1fr; }
     .bbg-form-figma .bbg-form-submit { width: 100%; }
   }

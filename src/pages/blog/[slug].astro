@@ -58,6 +58,8 @@ if (!post) {
 }
 
 const htmlContent = post.content ? portableTextToHtml(post.content, false) : "";
+const shareUrl = post.seo?.canonicalUrl || Astro.url.href;
+const encodedShareUrl = encodeURIComponent(shareUrl);
 const featuredImageUrl = post.featuredImage?.asset?.url;
 const featuredImageAlt = post.featuredImage?.alt || post.title;
 const featuredImage = featuredImageUrl
@@ -84,7 +86,7 @@ const featuredImage = featuredImageUrl
   canonicalUrl={post.seo?.canonicalUrl}
 >
   <article class="w-full bg-white section-padding">
-    <div class="mx-auto w-full max-w-4xl px-4">
+    <div class="article-container">
       {/* Featured Image */}
       {
         featuredImage && (
@@ -113,7 +115,7 @@ const featuredImage = featuredImageUrl
           post.categories?.length > 0 && (
             <div class="flex flex-wrap gap-2">
               {post.categories.map((category: string) => (
-                <span class="inline-block rounded-full bg-blue-100 px-4 py-2 text-sm font-semibold text-blue-700">
+                <span class="article-category">
                   {category}
                 </span>
               ))}
@@ -151,11 +153,18 @@ const featuredImage = featuredImageUrl
       {/* Content */}
       {
         htmlContent && (
-          <div class="prose prose-lg max-w-none mb-12 space-y-4">
+          <div class="article-prose prose prose-purple max-w-3xl mx-auto mb-12 space-y-4">
             <Fragment set:html={htmlContent} />
           </div>
         )
       }
+
+      <nav class="article-share" aria-label="Share this article">
+        <span>Share This Article</span>
+        <a href={`https://www.facebook.com/sharer/sharer.php?u=${encodedShareUrl}`} target="_blank" rel="noopener noreferrer">Facebook<span class="sr-only"> (opens in a new tab)</span></a>
+        <a href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodedShareUrl}`} target="_blank" rel="noopener noreferrer">LinkedIn<span class="sr-only"> (opens in a new tab)</span></a>
+        <a href={`mailto:?subject=${encodeURIComponent(post.title)}&body=${encodedShareUrl}`}>Email</a>
+      </nav>
 
       {/* Tags */}
       {
@@ -179,3 +188,19 @@ const featuredImage = featuredImageUrl
     </div>
   </article>
 </MainLayout>
+
+<style>
+  .article-container { width: min(calc(100% - 2 * var(--site-gutter)), 768px); margin-inline: auto; }
+  .article-container h1 { font-size: clamp(32px, 5vw, 48px); line-height: 1.15; letter-spacing: -.025em; }
+  .article-category { display: inline-block; padding: 6px 14px; border: 1px solid var(--purple-primary); border-radius: 999px; background: var(--purple-primary); color: var(--button-text); font-size: 13px; font-weight: 700; }
+  .article-prose { color: #334155; font-size: 18px; line-height: 1.8; }
+  .article-prose :global(h2), .article-prose :global(h3), .article-prose :global(h4) { color: #111827; line-height: 1.25; margin-top: 1.8em; margin-bottom: .65em; }
+  .article-prose :global(a) { color: var(--purple-hover); text-decoration: underline; text-underline-offset: 3px; }
+  .article-prose :global(p), .article-prose :global(ul), .article-prose :global(ol) { margin-bottom: 1.25em; }
+  .article-prose :global(img) { max-width: 100%; height: auto; border-radius: 16px; }
+  .article-share { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; padding-block: 24px; border-block: 1px solid #e2e8f0; }
+  .article-share span:first-child { font-weight: 700; color: #111827; }
+  .article-share a { min-height: 44px; display: inline-flex; align-items: center; padding: 9px 16px; border: 1px solid var(--purple-soft); border-radius: 999px; color: var(--purple-hover); font-size: 14px; font-weight: 700; }
+  .article-share a:hover { background: var(--purple-soft); }
+  .article-share a:focus-visible { outline: 3px solid var(--purple-primary); outline-offset: 3px; }
+</style>
