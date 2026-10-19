@@ -335,6 +335,7 @@ const pageSchema = {
   @layer base {
     :global(a) { color: inherit; text-decoration: none; }
   }
+  :global(body), :global(#main-content) { background: var(--surface-white); }
   :global(.skip-link) { position: absolute; top: -100px; left: 1rem; z-index: 100; padding: .75rem 1rem; border-radius: 8px; background: white; color: var(--purple-deep); }
   :global(.skip-link:focus) { top: 1rem; }
   :global(a:focus-visible), :global(button:focus-visible), :global(summary:focus-visible), :global(input:focus-visible), :global(select:focus-visible), :global(textarea:focus-visible) { outline: 3px solid var(--purple-hover); outline-offset: 3px; }

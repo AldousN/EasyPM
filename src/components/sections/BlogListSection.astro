@@ -324,7 +324,7 @@ const categoryNames = [...new Set<string>(allPosts.flatMap((post: any) => Array.
 </section>
 
 <style>
-  .blog-list-section { width: 100%; padding-block: 64px; background: rgba(248, 250, 252, .5); }
+  .blog-list-section { width: 100%; padding-block: 64px; background: var(--surface-white); }
   .blog-list-inner { width: min(calc(100% - 2 * var(--site-gutter)), var(--site-content-width)); min-width: 0; margin-inline: auto; }
   .blog-list-title { margin: 0 0 12px; color: #0f172a; font: 800 clamp(30px, 3.2vw, 40px)/1.15 var(--font-heading); letter-spacing: -.025em; }
   .blog-list-description { max-width: 672px; margin: 0 0 32px; color: #475569; font: 400 clamp(16px, 1.5vw, 18px)/1.6 var(--font-body); }

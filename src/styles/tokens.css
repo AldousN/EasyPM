@@ -12,7 +12,7 @@
   --purple-secondary: var(--purple-primary);
   --neutral-tertiary: #3A3A3A;
   --neutral-dark: #292929;
-  --neutral-white: #FAFAFA;
+  --neutral-white: #FFFFFF;
   --purple-deep: var(--purple-hover);
   --purple-pale: var(--purple-soft);
   --line: rgba(41, 41, 41, 0.14);
@@ -41,12 +41,12 @@
   --ink-black: var(--neutral-dark);
   --ink-soft: var(--neutral-tertiary);
   --surface-white: #FFFFFF;
-  --surface-soft-blue: var(--purple-pale);
-  --surface-mute: #EEEAF3;
+  --surface-soft-blue: var(--surface-white);
+  --surface-mute: var(--surface-white);
   --warm-white: #FFFFFF;
-  --sand-pale: var(--purple-soft);
-  --surface-soft-green: var(--purple-pale);
-  --surface-sage: var(--purple-soft);
+  --sand-pale: var(--surface-white);
+  --surface-soft-green: var(--surface-white);
+  --surface-sage: var(--surface-white);
   --emergency: var(--purple-primary);
   --emergency-text: var(--purple-deep);
   --heat-orange: var(--purple-secondary);
@@ -69,8 +69,8 @@
   --green-hover: var(--purple-hover);
   --sand: var(--surface-mute);
   --sand-deep: #D8D1E2;
-  --surface-tint: var(--purple-pale);
-  --surface-mint: var(--purple-soft);
+  --surface-tint: var(--surface-white);
+  --surface-mint: var(--surface-white);
 }
 
 /* Figma heading scale. Responsive sizes use its mobile specification. */

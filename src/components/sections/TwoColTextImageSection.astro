@@ -116,7 +116,7 @@ const backgroundTheme =
  *   cream       — sand-pale       (light text scheme)
  *   oliveGreen  — true olive #5E7F3A (dark text scheme) — visibly
  *                 distinct from darkGreen
- *   darkGreen   — green-deep      (dark text scheme)
+ *   darkGreen   — legacy name for the client's light-purple content surface
  */
 const themeConfig = {
   white: {
@@ -156,10 +156,10 @@ const themeConfig = {
   },
   darkGreen: {
     base: "bbg-twocol-theme-darkgreen",
-    title: "bbg-twocol-title-dark",
-    subtitle: "bbg-twocol-sub-dark",
-    highlight: "bbg-twocol-highlight-dark",
-    isDark: true,
+    title: "bbg-twocol-title-light",
+    subtitle: "bbg-twocol-sub-light",
+    highlight: "bbg-twocol-highlight",
+    isDark: false,
   },
 } as const;
 
@@ -203,12 +203,9 @@ const objectPositionClass = galleryCount >= 3 ? "object-[50%_20%]" : "object-cen
 // Single-image URLs use fit: crop with width + height so Sanity's
 // hotspot/crop is honored — matches how the multi-image gallery cells
 // already build their sources.
-//   Desktop variant: 4:5 portrait beside the text column.
-//   Mobile variant:  4:3 landscape so the image doesn't dominate the
-//                    phone's viewport vertically (same approach the hero
-//                    1-column image uses on mobile).
-const SINGLE_IMAGE_ASPECT_DESKTOP = 5 / 4; // portrait
-const SINGLE_IMAGE_ASPECT_MOBILE = 3 / 4; // landscape
+// Photography uses a 4:3 crop, with minimum frame heights in shared CSS.
+const SINGLE_IMAGE_ASPECT_DESKTOP = 3 / 4;
+const SINGLE_IMAGE_ASPECT_MOBILE = 3 / 4;
 
 const buildSingleImageSrcInternal = (
   image: { url: string; source?: SanityImageSource },
@@ -292,9 +289,7 @@ const getImageSpanClasses = (index: number) => {
     // Aspect-ratio container + object-cover so the image fills the
     // column and visually balances the text. Sanity hotspot/crop is
     // honored via the buildSingleImageSrc URL (fit: crop).
-    // 4:5 portrait — taller than wide so it reads as a portrait beside
-    // the text column.
-    return "bbg-twocol-single rounded-[28px] w-full aspect-[4/5]";
+    return "bbg-twocol-single rounded-[24px] w-full aspect-[4/3]";
   }
   if (galleryCount >= 3) {
     if (galleryCount === 4) return 'rounded-[24px] aspect-[213/100]';
@@ -408,26 +403,20 @@ const getImageSpanClasses = (index: number) => {
               >
                 {isSingleImage ? (
                   <picture>
-                    {/* Mobile gets a 4:3 landscape crop — same compact
-                        shape the hero 1-column image uses, so a single
-                        portrait image doesn't dominate the phone screen. */}
+                    {/* Responsive photography keeps the shared 4:3 crop. */}
                     <source
                       media="(max-width: 767px)"
                       srcset={containSingleImage ? `${buildContainedImageSrc(image, 480)} 480w, ${buildContainedImageSrc(image, 768)} 768w` : `${buildSingleImageSrcMobile(image, 480)} 480w, ${buildSingleImageSrcMobile(image, 768)} 768w`}
                       sizes="100vw"
                     />
-                    {/* Desktop fallback: 4:5 portrait beside the text.
-                        480w variant added so narrower desktop viewports
-                        (where 50vw < 500px) pick a smaller file. PageSpeed
-                        was flagging the 768w as oversized at ~380px column
-                        widths — adding 480w lets the browser pick optimally. */}
+                    {/* Smaller sources support narrow desktop columns. */}
                     <img
                       src={containSingleImage ? buildContainedImageSrc(image, 1200) : buildSingleImageSrc(image, 1200)}
                       srcset={containSingleImage ? `${buildContainedImageSrc(image, 480)} 480w, ${buildContainedImageSrc(image, 768)} 768w, ${buildContainedImageSrc(image, 1200)} 1200w` : `${buildSingleImageSrc(image, 480)} 480w, ${buildSingleImageSrc(image, 600)} 600w, ${buildSingleImageSrc(image, 768)} 768w, ${buildSingleImageSrc(image, 1200)} 1200w, ${buildSingleImageSrc(image, 1600)} 1600w`}
                       sizes="(max-width: 768px) 100vw, 50vw"
                       alt={image.alt ?? props.title}
                       width={1200}
-                      height={1500}
+                      height={900}
                       class={`absolute inset-0 h-full w-full ${containSingleImage ? 'object-contain p-8 md:p-12' : 'object-cover'}`}
                       loading="lazy"
                       decoding="async"
@@ -496,8 +485,20 @@ const getImageSpanClasses = (index: number) => {
     background: #fff;
     box-shadow: 0 12px 36px rgba(15, 23, 42, 0.051);
   }
-  :is(.bbg-twocol-theme-darkgreen, .bbg-twocol-theme-olive) .bbg-twocol-grid { background: #ffffff08; border-color: #ffffff40; }
-  :is(.bbg-twocol-theme-darkgreen, .bbg-twocol-theme-olive) .section-description { color: #fff; font-weight: 700; }
+  .bbg-twocol-section:is(.bbg-twocol-theme-darkgreen, .bbg-twocol-theme-olive) { padding-block: 64px; }
+  :is(.bbg-twocol-theme-darkgreen, .bbg-twocol-theme-olive) .bbg-twocol-grid { grid-template-columns: minmax(0, 1fr); gap: 40px; padding: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
+  :is(.bbg-twocol-theme-darkgreen, .bbg-twocol-theme-olive) .bbg-twocol-content { min-width: 0; gap: 24px; }
+  :is(.bbg-twocol-theme-darkgreen, .bbg-twocol-theme-olive) .bbg-twocol-title { color: #fff; font-size: clamp(30px, 3.2vw, 40px); font-weight: 800; }
+  :is(.bbg-twocol-theme-darkgreen, .bbg-twocol-theme-olive) .section-description { max-width: 576px; color: var(--purple-soft); font-size: clamp(16px, 1.5vw, 18px); font-weight: 400; }
+  :is(.bbg-twocol-theme-darkgreen, .bbg-twocol-theme-olive) .section-description :global(p) { color: inherit; }
+  :is(.bbg-twocol-theme-darkgreen, .bbg-twocol-theme-olive) .bbg-twocol-ctas { padding-top: 0; }
+  :is(.bbg-twocol-theme-darkgreen, .bbg-twocol-theme-olive) .bbg-twocol-ctas a { background: #fff; color: var(--purple-primary); font-weight: 700; box-shadow: var(--button-shadow-md); }
+  :is(.bbg-twocol-theme-darkgreen, .bbg-twocol-theme-olive) .bbg-twocol-ctas a:is(:hover, :focus-visible) { background: var(--purple-soft); color: var(--purple-hover); }
+  :is(.bbg-twocol-theme-darkgreen, .bbg-twocol-theme-olive) .bbg-twocol-ctas a:focus-visible { outline-color: #fff; }
+  @media (min-width: 1024px) {
+    .bbg-twocol-section:is(.bbg-twocol-theme-darkgreen, .bbg-twocol-theme-olive) { padding-block: 96px; }
+    :is(.bbg-twocol-theme-darkgreen, .bbg-twocol-theme-olive) .bbg-twocol-grid:not(.has-no-image) { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 64px; }
+  }
   .bbg-twocol-gallery.is-single > div { border-radius: 24px; box-shadow: 0 20px 42px rgba(15, 23, 42, 0.149); }
   .bbg-twocol-grid.has-no-image { grid-template-columns: minmax(0, 1fr); }
   .bbg-twocol-grid.has-no-image .bbg-twocol-content { max-width: 850px; }
@@ -540,7 +541,14 @@ const getImageSpanClasses = (index: number) => {
   /* True olive — distinctly more yellow-green than green-deep so the
      "Olive Green" Sanity option visibly differs from "Dark Green". */
   .bbg-twocol-theme-olive     { background: #5E7F3A;                   color: var(--warm-white); }
-  .bbg-twocol-theme-darkgreen { background: var(--green-deep);         color: var(--warm-white); }
+  .bbg-twocol-theme-darkgreen { background: var(--surface-white);      color: #334155; }
+  :global(.figma-estimate-strip) + .bbg-twocol-theme-darkgreen { background: var(--purple-soft); }
+  .bbg-twocol-theme-darkgreen .bbg-twocol-title-light { color: #0f172a; }
+  .bbg-twocol-theme-darkgreen .section-description { color: #334155; }
+  .bbg-twocol-theme-darkgreen .bbg-twocol-sub-light { color: #334155; }
+  .bbg-twocol-theme-darkgreen .bbg-twocol-ctas a { background: var(--purple-primary); color: var(--button-text); }
+  .bbg-twocol-theme-darkgreen .bbg-twocol-ctas a:is(:hover, :focus-visible) { background: var(--purple-hover); color: var(--button-text); }
+  .bbg-twocol-theme-darkgreen .bbg-twocol-ctas a:focus-visible { outline-color: var(--purple-hover); }
 
   /* Title + subtitle color tokens per theme. */
   .bbg-twocol-title-light     { color: var(--ink-black); }
@@ -635,6 +643,7 @@ const getImageSpanClasses = (index: number) => {
     font-weight: 700;
   }
   :is(.bbg-twocol-theme-darkgreen, .bbg-twocol-theme-olive) .bbg-twocol-bullet { border-color: var(--purple-soft); color: #fff; }
+  .bbg-twocol-theme-darkgreen .bbg-twocol-bullet { border-color: var(--purple-primary); color: var(--purple-hover); }
 
   .bbg-twocol-bullet-mark {
     display: inline-flex;
@@ -685,15 +694,13 @@ const getImageSpanClasses = (index: number) => {
 
   /* Dark-theme overrides — both olive and dark green flip the markers
      to sand-pale so they read against the dark surface. */
-  .bbg-twocol-theme-olive .bbg-twocol-bullet-mark.is-check,
-  .bbg-twocol-theme-darkgreen .bbg-twocol-bullet-mark.is-check {
+  .bbg-twocol-theme-olive .bbg-twocol-bullet-mark.is-check {
     background: rgba(247, 245, 241, 0.18);
     border-color: var(--sand-pale);
     color: var(--warm-white);
   }
 
-  .bbg-twocol-theme-olive .bbg-twocol-bullet-mark.is-circle,
-  .bbg-twocol-theme-darkgreen .bbg-twocol-bullet-mark.is-circle {
+  .bbg-twocol-theme-olive .bbg-twocol-bullet-mark.is-circle {
     background: var(--sand-pale);
     box-shadow: 0 0 0 3px rgba(236, 227, 212, 0.22);
   }
@@ -796,13 +803,17 @@ const getImageSpanClasses = (index: number) => {
     }
   }
 
-  /* === Single-image sizing on mobile =============================
-     Desktop keeps the 4:5 portrait aspect (set by Tailwind aspect-[4/5]
-     on the .bbg-twocol-single class). On mobile, override to a compact
-     4:3 landscape — same pattern the hero 1-column image uses on mobile,
-     so a single image never dominates the phone's viewport vertically.
-     The image still fills its container at 100% × 100% with object-fit:
-     cover (Sanity hotspot honored). */
+  /* Shared photo frames crop from the center and preserve their layout height. */
+  .bbg-twocol-gallery.is-single:not(.is-contained) > .bbg-twocol-single { min-height: 320px; }
+  .bbg-twocol-gallery.is-single:not(.is-contained) img { max-height: none; object-position: center; transition: transform 500ms ease-out; }
+  .bbg-twocol-gallery.is-single:not(.is-contained):hover img { transform: scale(1.05); }
+  @media (min-width: 1024px) {
+    .bbg-twocol-gallery.is-single:not(.is-contained) > .bbg-twocol-single { min-height: 400px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .bbg-twocol-gallery.is-single:not(.is-contained) img { transition: none; }
+    .bbg-twocol-gallery.is-single:not(.is-contained):hover img { transform: none; }
+  }
   @media (max-width: 767px) {
     .bbg-twocol-gallery.is-single {
       max-width: 100%;
@@ -812,14 +823,15 @@ const getImageSpanClasses = (index: number) => {
       max-height: none;
     }
   }
-  .bbg-twocol-gallery.is-four { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
-  .bbg-twocol-gallery.is-four > div { min-width: 0; max-height: none; aspect-ratio: 16 / 10; }
-  .bbg-twocol-gallery.is-contained > div.bbg-twocol-single { aspect-ratio: 4 / 3 !important; background: var(--purple-soft); box-shadow: none; }
+  .bbg-twocol-gallery.is-four { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+  .bbg-twocol-gallery.is-four > div { min-width: 0; max-height: none; aspect-ratio: 4 / 3; border-radius: 16px; box-shadow: var(--button-shadow-sm); }
+  @media (min-width: 640px) { .bbg-twocol-gallery.is-four { gap: 24px; } }
+  .bbg-twocol-gallery.is-contained > div.bbg-twocol-single { aspect-ratio: 4 / 3 !important; background: var(--surface-white); box-shadow: none; }
   .bbg-twocol-gallery.is-contained img { width: min(65%, 280px); height: min(65%, 280px); margin: auto; padding: 0; object-fit: contain; }
   .bbg-twocol-highlight-dark { color: #fff; }
   @media (max-width: 767px) {
     .bbg-twocol-gallery.is-four { width: 100%; margin: 0; padding: 0; overflow: visible; scroll-snap-type: none; }
-    .bbg-twocol-gallery.is-four > div { width: auto; max-width: none; min-width: 0; flex: none; aspect-ratio: 16 / 10 !important; }
+    .bbg-twocol-gallery.is-four > div { width: auto; max-width: none; min-width: 0; flex: none; aspect-ratio: 4 / 3 !important; }
     .bbg-twocol-section:has(.bbg-twocol-gallery.is-four) .bbg-twocol-grid > div:last-child::after { display: none; }
   }
 </style>

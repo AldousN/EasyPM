@@ -75,8 +75,8 @@ const imageUrl = (image: NonNullable<ProcessSection['steps'][number]['image']>, 
   .figma-card:is(:hover, :focus-within) { transform: translateY(-4px); box-shadow: 0 16px 32px #0003; }
   .figma-card-media { display: grid; place-items: center; min-height: 132px; padding: 18px 18px 0; }
   .figma-card-media img { display: block; width: 112px; height: 112px; object-fit: contain; }
-  .figma-cards-photo { position: relative; isolation: isolate; padding-block: 72px; background: linear-gradient(180deg, var(--purple-soft) 0%, var(--purple-soft) 52%, var(--purple-soft) 100%); }
-  .figma-cards-photo::before { position: absolute; z-index: -1; inset: 0; background: radial-gradient(ellipse 48% 42% at 50% 0%, var(--purple-soft) 0%, transparent 100%); content: ''; pointer-events: none; }
+  .figma-cards-photo { position: relative; isolation: isolate; padding-block: 72px; background: var(--surface-white); }
+  .figma-cards-photo::before { position: absolute; z-index: -1; inset: 0; background: none; content: ''; pointer-events: none; }
   .figma-cards-photo.figma-cards-dark { background: #262626; }
   .figma-cards-photo.figma-cards-dark::before { background: none; }
   .figma-cards-photo .figma-cards-heading { max-width: 640px; margin-bottom: 48px; }

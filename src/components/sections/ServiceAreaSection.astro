@@ -44,12 +44,14 @@ const hasMap = Boolean(mapEmbedUrl && !embedLooksLikeImage);
 const hasVisual = Boolean(imageUrl || props.mapEmbed);
 ---
 
-<section class="section-inner-lg w-full bg-white bbg-sa-section">
-  <div class={`flex w-full flex-col gap-10 lg:items-center bbg-sa-grid ${hasVisual ? 'lg:grid lg:grid-cols-[minmax(0,0.88fr)_minmax(0,1.12fr)]' : 'lg:grid lg:grid-cols-1'}`}>
-    <div class="space-y-8 text-center sm:text-left">
-      <div class="space-y-3">
+<section class="bbg-sa-section">
+  <div class="bbg-sa-inner">
+  <div class:list={['bbg-sa-grid', { 'has-visual': hasVisual }]}>
+    <div class="bbg-sa-content">
+      <div class="bbg-sa-copy">
+        <span class="bbg-sa-eyebrow">Service Coverage</span>
         {props.title && (
-          <h2 class="text-3xl font-semibold text-slate-900">
+          <h2 class="bbg-sa-title">
             {titleSegments.map((segment) =>
               segment.highlight ? (
                 <span class={highlightClass}>{segment.text}</span>
@@ -60,23 +62,23 @@ const hasVisual = Boolean(imageUrl || props.mapEmbed);
           </h2>
         )}
         {props.subtitle && <p class="subtitle">{props.subtitle}</p>}
-        {props.description && <p class="section-description text-muted">{props.description}</p>}
+        {props.description && <p class="bbg-sa-description">{props.description}</p>}
       </div>
 
       {props.communities?.length > 0 && (
-        <ul class="bbg-sa-communities grid gap-x-6 gap-y-3 grid-cols-2 sm:grid-cols-2" role="list">
+        <ul class="bbg-sa-communities" role="list">
           {props.communities.map((community) => {
             const href = resolveLink(community.link);
             const label = (
-              <span class="text-base sm:text-lg font-semibold text-slate-900 transition-colors hover:text-(--color-primary)">
+              <span class="bbg-sa-community-label">
                 {community.label}
               </span>
             );
 
             return (
-              <li class="flex items-start gap-2 sm:gap-3">
-                <span class="bbg-sa-location-icon mt-1 inline-flex h-5 w-5 sm:h-6 sm:w-6 items-center justify-center rounded-full">
-                  <svg viewBox="0 0 24 24" aria-hidden="true" class="h-3.5 w-3.5 sm:h-4 sm:w-4 fill-current">
+              <li class="bbg-sa-community">
+                <span class="bbg-sa-location-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" class="fill-current">
                     <path d="M12 2C8.14 2 5 5.14 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.86-3.14-7-7-7Zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5Z" />
                   </svg>
                 </span>
@@ -160,35 +162,33 @@ const hasVisual = Boolean(imageUrl || props.mapEmbed);
       ) : null}
     </div>}
   </div>
+  </div>
 </section>
 
 <style>
-  /* Unified highlight — red italic, matches hero. */
-  .bbg-sa-leaf {
-    display: inline-block;
-    color: var(--emergency);
-    font-style: italic;
-    padding-right: 0.05em;
+  .bbg-sa-section { width: 100%; margin: 0; padding-block: 64px; background: var(--surface-white); }
+  .bbg-sa-inner { width: min(calc(100% - 2 * var(--site-gutter)), var(--site-content-width)); min-width: 0; margin-inline: auto; }
+  .bbg-sa-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 40px; align-items: center; width: 100%; max-width: 896px; min-width: 0; margin-inline: auto; padding: 32px; border: 1px solid #e2e8f0cc; border-radius: 24px; background: #fff; box-shadow: 0 10px 15px -3px rgba(15, 23, 42, .1), 0 4px 6px -4px rgba(15, 23, 42, .1); }
+  .bbg-sa-grid.has-visual { max-width: none; }
+  .bbg-sa-content { display: flex; flex-direction: column; gap: 32px; min-width: 0; }
+  .bbg-sa-copy { min-width: 0; }
+  .bbg-sa-eyebrow { display: inline-block; margin-bottom: 16px; padding: 4px 14px; border-radius: 999px; background: var(--purple-soft); color: var(--purple-primary); font: 600 12px/1.5 var(--font-heading); letter-spacing: .08em; text-transform: uppercase; }
+  .bbg-sa-title { margin: 0 0 16px; color: #0f172a; font: 800 clamp(30px, 3.2vw, 40px)/1.15 var(--font-heading); letter-spacing: -.025em; }
+  .bbg-sa-leaf { color: var(--purple-primary); font-style: inherit; }
+  .bbg-sa-description { margin: 0; color: #475569; font: 400 16px/1.7 var(--font-body); }
+  .bbg-sa-communities { display: flex; flex-wrap: wrap; gap: 12px; margin: 0; padding: 0; list-style: none; }
+  .bbg-sa-community { display: inline-flex; align-items: center; gap: 12px; max-width: 100%; padding: 12px 20px; border: 1px solid var(--purple-soft); border-radius: 16px; background: var(--purple-soft); color: var(--purple-primary); }
+  .bbg-sa-community > div { min-width: 0; }
+  .bbg-sa-community-label { color: var(--purple-primary); font: 700 16px/1.5 var(--font-heading); overflow-wrap: anywhere; }
+  .bbg-sa-location-icon { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; flex: none; color: var(--purple-primary); }
+  .bbg-sa-location-icon svg { width: 24px; height: 24px; }
+  @media (min-width: 640px) { .bbg-sa-grid { padding: 48px; } .bbg-sa-community-label { font-size: 18px; } }
+  @media (min-width: 1024px) {
+    .bbg-sa-section { padding-block: 96px; }
+    .bbg-sa-grid { padding: 64px; }
+    .bbg-sa-grid.has-visual { grid-template-columns: minmax(0, .88fr) minmax(0, 1.12fr); }
+    .bbg-sa-description { font-size: 18px; }
   }
-
-  /* Lock the section + grid to viewport so wide maps/images can't bleed
-     past the right edge on mobile — Tailwind w-full was being dropped by
-     v4 in this scoped context. */
-  .bbg-sa-section {
-    max-width: 100%;
-    overflow-x: hidden;
-  }
-
-  .bbg-sa-grid {
-    max-width: 100%;
-    min-width: 0;
-    padding: clamp(24px, 4vw, 48px);
-    border: 1px solid var(--purple-soft);
-    border-radius: 28px;
-    background: var(--purple-soft);
-  }
-  .bbg-sa-communities { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
-  .bbg-sa-location-icon { flex: none; background: #ede9fe; color: var(--purple-hover); }
 
   /* Force any map/image inside the right column to stay within bounds. */
   .bbg-sa-grid :global(img),
