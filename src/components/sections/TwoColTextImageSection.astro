@@ -178,7 +178,7 @@ const localCropStyle = (image: { url: string; source?: SanityImageSource }) => {
   const visibleWidth = 1 - left - right;
   const visibleHeight = 1 - top - bottom;
   if (visibleWidth <= 0 || visibleHeight <= 0) return undefined;
-  return `width:${100 / visibleWidth}%;height:${100 / visibleHeight}%;left:${-100 * left / visibleWidth}%;top:${-100 * top / visibleHeight}%;max-width:none;max-height:none;object-fit:fill`;
+  return `width:${100 / visibleWidth}%;height:${100 / visibleHeight}%;left:${-100 * left / visibleWidth}%;top:${-100 * top / visibleHeight}%;max-width:none;max-height:none`;
 };
 const videoEmbedUrl = getYouTubeEmbedUrl(props.videoUrl);
 const hasMedia = Boolean(videoEmbedUrl || galleryCount > 0);
@@ -198,8 +198,8 @@ const galleryClasses = (() => {
   return "grid gap-4";
 })();
 
-// Keep faces/details in frame for multi-image layout by biasing object position upward
-const objectPositionClass = galleryCount >= 3 ? "object-[50%_20%]" : "object-center";
+// Preserve the three-photo gallery's face framing; center balanced photo grids.
+const objectPositionClass = galleryCount === 3 ? "object-[50%_20%]" : "object-center";
 
 // Single-image URLs use fit: crop with width + height so Sanity's
 // hotspot/crop is honored — matches how the multi-image gallery cells
@@ -293,20 +293,25 @@ const getImageSpanClasses = (index: number) => {
     return "bbg-twocol-single rounded-[24px] w-full aspect-[4/3]";
   }
   if (galleryCount >= 3) {
-    if (galleryCount === 4) return 'rounded-[24px] aspect-[213/100]';
-    if (index === 0) {
-      return `rounded-[32px] aspect-[4/3] md:row-span-2 md:self-center md:aspect-square ${!imageLeft ? "md:order-2 md:col-start-2" : ""}`;
-    }
-    if (index === 1) {
-      return `rounded-[24px] aspect-[4/3] md:aspect-square md:self-center ${!imageLeft ? "md:order-1 md:col-start-1 md:row-start-1" : ""}`;
-    }
-    if (index === 2) {
-      return `rounded-[24px] aspect-[4/3] md:aspect-square md:self-center ${!imageLeft ? "md:order-1 md:col-start-1 md:row-start-2" : ""}`;
-    }
-    return "rounded-[24px]";
+    if (galleryCount === 4) return 'rounded-2xl aspect-[4/3] w-full';
+    return index === 0 ? 'bbg-twocol-feature' : 'bbg-twocol-stacked';
   }
   return "rounded-[28px] aspect-[4/3] w-full";
 };
+
+// Match the three-photo grid's portrait feature and landscape frames.
+const buildGalleryFrameSrc = (
+  image: { url: string; source?: SanityImageSource },
+  index: number,
+  width: number,
+  height: number,
+  quality: number,
+) => buildGalleryCropSrc(
+  image,
+  width,
+  galleryCount === 3 ? Math.round(width * (index === 0 ? 4 / 3 : 3 / 4)) : height,
+  quality,
+);
 ---
 
 <section id={props.anchorId} class={`section-full-width-lg bbg-twocol-section ${baseClasses}`}>
@@ -403,7 +408,7 @@ const getImageSpanClasses = (index: number) => {
                 class={`overflow-hidden ${galleryCount === 1 ? "relative w-full" : "relative max-h-80 md:max-h-none"} ${containSingleImage ? 'bg-white' : ''} ${getImageSpanClasses(index)}`}
               >
                 {isSingleImage ? (
-                  <picture>
+                  <picture class={containSingleImage ? undefined : 'absolute inset-0 h-full w-full'} style={containSingleImage ? undefined : localCropStyle(image)}>
                     {/* Responsive photography keeps the shared 4:3 crop. */}
                     <source
                       media="(max-width: 767px)"
@@ -418,28 +423,27 @@ const getImageSpanClasses = (index: number) => {
                       alt={image.alt ?? props.title}
                       width={1200}
                       height={900}
-                      class={`absolute inset-0 h-full w-full ${containSingleImage ? 'object-contain p-8 md:p-12' : 'object-cover'}`}
+                      class={`absolute inset-0 h-full w-full ${containSingleImage ? 'object-contain p-8 md:p-12' : 'object-cover object-center'}`}
                       loading="lazy"
                       decoding="async"
                     />
                   </picture>
                 ) : (
-                  <picture>
+                  <picture class="absolute inset-0 h-full w-full" style={localCropStyle(image)}>
                     <source
                       media="(max-width: 768px)"
-                      srcset={`${buildGalleryCropSrc(image, 380, 300, 70)} 380w, ${buildGalleryCropSrc(image, 640, 400, 72)} 640w`}
-                      sizes="(max-width: 768px) 100vw"
+                      srcset={`${buildGalleryFrameSrc(image, index, 380, 300, 70)} 380w, ${buildGalleryFrameSrc(image, index, 640, 400, 72)} 640w`}
+                      sizes={galleryCount === 3 ? '(max-width: 767px) 40vw, 22vw' : '(max-width: 768px) 100vw'}
                     />
                     {/* 380w added for narrow desktop columns. */}
                     <img
-                      src={buildGalleryCropSrc(image, 900, 675, 78)}
-                      srcset={`${buildGalleryCropSrc(image, 380, 285, 70)} 380w, ${buildGalleryCropSrc(image, 480, 360, 72)} 480w, ${buildGalleryCropSrc(image, 768, 576, 75)} 768w, ${buildGalleryCropSrc(image, 1200, 900, 78)} 1200w`}
-                      sizes="(max-width: 768px) 100vw, 50vw"
+                      src={buildGalleryFrameSrc(image, index, 900, 675, 78)}
+                      srcset={`${buildGalleryFrameSrc(image, index, 380, 285, 70)} 380w, ${buildGalleryFrameSrc(image, index, 480, 360, 72)} 480w, ${buildGalleryFrameSrc(image, index, 768, 576, 75)} 768w, ${buildGalleryFrameSrc(image, index, 1200, 900, 78)} 1200w`}
+                      sizes={galleryCount === 3 ? '(max-width: 767px) 40vw, 22vw' : '(max-width: 768px) 100vw, 50vw'}
                       alt={image.alt ?? props.title}
                       width={800}
-                      height={600}
+                      height={galleryCount === 3 && index === 0 ? 1067 : 600}
                       class={`absolute inset-0 h-full w-full object-cover ${objectPositionClass}`}
-                      style={localCropStyle(image)}
                       loading="lazy"
                       decoding="async"
                     />
@@ -457,13 +461,13 @@ const getImageSpanClasses = (index: number) => {
 <style>
   .bbg-twocol-gallery.is-multi { column-gap: 24px; row-gap: 24px; }
   .bbg-twocol-gallery.is-four { align-items: stretch; }
-  @media (min-width: 768px) {
-    .bbg-twocol-gallery.is-stack > div { box-shadow: 0 12px 32px rgba(25, 15, 45, .18); transition: transform 240ms ease-out, box-shadow 240ms ease-out; }
-    .bbg-twocol-gallery.is-stack > div:first-child { z-index: 10; transform: translateY(-8px) scale(1.05); box-shadow: 0 22px 44px rgba(25, 15, 45, .26); }
-    .bbg-twocol-gallery.is-stack > div:nth-child(2) { z-index: 2; transform: translateY(10px) rotate(-2deg) scale(.96); }
-    .bbg-twocol-gallery.is-stack > div:nth-child(3) { z-index: 1; transform: translateY(-10px) rotate(2deg) scale(.96); }
-  }
-  @media (prefers-reduced-motion: reduce) { .bbg-twocol-gallery.is-stack > div { transition: none; } }
+  .bbg-twocol-gallery.is-stack { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: repeat(2, minmax(0, 1fr)); gap: 16px; align-items: center; }
+  .bbg-twocol-gallery.is-stack > div { width: 100%; min-width: 0; max-height: none; margin: 0; border-radius: 16px; box-shadow: var(--button-shadow-md); }
+  .bbg-twocol-gallery.is-stack > .bbg-twocol-feature { grid-column: 2; grid-row: 1 / span 2; aspect-ratio: 3 / 4; align-self: center; }
+  .bbg-twocol-gallery.is-stack > .bbg-twocol-stacked { grid-column: 1; aspect-ratio: 4 / 3; }
+  .bbg-twocol-gallery.is-stack > div:nth-child(2) { grid-row: 1; }
+  .bbg-twocol-gallery.is-stack > div:nth-child(3) { grid-row: 2; }
+  @media (min-width: 1024px) { .bbg-twocol-gallery.is-stack { gap: 24px; } }
   /* === Section grid ===============================================
      Replaces the previous Tailwind grid + space-y-5 utility chain.
      space-y-5 was silently dropping under Tailwind v4 in scoped Astro
@@ -742,89 +746,14 @@ const getImageSpanClasses = (index: number) => {
     .bbg-twocol-grid > div:last-child :global(img) {
       max-height: 70vh;
     }
-
-    /* === Multi-image gallery → horizontal scroll strip ==============
-       3+ images on mobile become a swipeable row. The container's
-       Tailwind grid utilities are explicitly nuked here so the flex
-       row + horizontal overflow can take over. */
-    .bbg-twocol-gallery.is-stack {
-      display: flex !important;
-      flex-direction: row !important;
-      flex-wrap: nowrap !important;
-      grid-template-columns: none !important;
-      grid-template-rows: none !important;
-      grid-auto-rows: auto !important;
-      grid-auto-flow: row !important;
-      gap: 12px !important;
-      overflow-x: scroll !important;
-      overflow-y: hidden;
-      scroll-snap-type: x mandatory;
-      -webkit-overflow-scrolling: touch;
-      scrollbar-width: none;
-      margin-left: -16px;
-      margin-right: -16px;
-      padding: 0 32px 12px 16px;
-      max-width: calc(100% + 32px);
-    }
-
-    .bbg-twocol-gallery.is-stack::-webkit-scrollbar {
-      display: none;
-      width: 0;
-      height: 0;
-    }
-
-    /* Each image cell becomes a fixed-width scroll snap card. */
-    .bbg-twocol-gallery.is-stack > div {
-      flex: 0 0 78% !important;
-      width: 78% !important;
-      max-width: 78% !important;
-      min-width: 78% !important;
-      max-height: none !important;
-      height: auto !important;
-      aspect-ratio: 4 / 3 !important;
-      scroll-snap-align: start;
-      position: relative;
-      margin: 0 !important;
-      grid-row: auto !important;
-      grid-column: auto !important;
-      grid-column-start: auto !important;
-      grid-row-start: auto !important;
-      order: 0 !important;
-    }
-
-    /* Images inside fill the card. */
-    .bbg-twocol-gallery.is-stack > div :global(img) {
-      position: absolute;
-      inset: 0;
-      width: 100% !important;
-      height: 100% !important;
-      object-fit: cover;
-      max-height: none !important;
-    }
-
-    /* Subtle right-edge fade — visual cue that more content is to the
-       right. Sits on the section container, fades the last 24px. */
-    .bbg-twocol-section:has(.bbg-twocol-gallery.is-stack) .bbg-twocol-grid > div:last-child {
-      position: relative;
-    }
-    .bbg-twocol-section:has(.bbg-twocol-gallery.is-stack) .bbg-twocol-grid > div:last-child::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      right: 0;
-      bottom: 0;
-      width: 32px;
-      pointer-events: none;
-      background: linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.04) 100%);
-    }
   }
 
   /* Shared photo frames crop from the center and preserve their layout height. */
-  .bbg-twocol-gallery.is-single:not(.is-contained) > .bbg-twocol-single { min-height: 320px; }
-  .bbg-twocol-gallery.is-single:not(.is-contained) img { max-height: none; object-position: center; transition: transform 500ms ease-out; }
+  .bbg-twocol-gallery.is-single:not(.is-contained) > .bbg-twocol-single { min-height: 320px; padding: 0; border: 0; background: transparent; }
+  .bbg-twocol-gallery.is-single:not(.is-contained) img { width: 100%; height: 100%; max-height: none; padding: 0; object-fit: cover; object-position: center; transition: transform 500ms ease-out; }
   .bbg-twocol-gallery.is-single:not(.is-contained):hover img { transform: scale(1.05); }
   @media (min-width: 1024px) {
-    .bbg-twocol-gallery.is-single:not(.is-contained) > .bbg-twocol-single { min-height: 400px; }
+    .bbg-twocol-gallery.is-single:not(.is-contained) > .bbg-twocol-single { min-height: 420px; }
   }
   @media (prefers-reduced-motion: reduce) {
     .bbg-twocol-gallery.is-single:not(.is-contained) img { transition: none; }
@@ -840,7 +769,13 @@ const getImageSpanClasses = (index: number) => {
     }
   }
   .bbg-twocol-gallery.is-four { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
-  .bbg-twocol-gallery.is-four > div { min-width: 0; max-height: none; aspect-ratio: 4 / 3; border-radius: 16px; box-shadow: var(--button-shadow-sm); }
+  .bbg-twocol-gallery.is-four > div { min-width: 0; max-height: none; aspect-ratio: 4 / 3; padding: 0; border: 0; border-radius: 16px; background: transparent; box-shadow: var(--button-shadow-sm); }
+  .bbg-twocol-gallery.is-four img { max-height: none; object-fit: cover; object-position: center; transition: transform 500ms ease-out; }
+  .bbg-twocol-gallery.is-four > div:hover img { transform: scale(1.05); }
+  @media (prefers-reduced-motion: reduce) {
+    .bbg-twocol-gallery.is-four img { transition: none; }
+    .bbg-twocol-gallery.is-four > div:hover img { transform: none; }
+  }
   @media (min-width: 640px) { .bbg-twocol-gallery.is-four { gap: 24px; } }
   .bbg-twocol-gallery.is-contained > div.bbg-twocol-single { aspect-ratio: 4 / 3 !important; background: var(--surface-white); box-shadow: none; }
   .bbg-twocol-gallery.is-contained img { width: min(65%, 280px); height: min(65%, 280px); margin: auto; padding: 0; object-fit: contain; }

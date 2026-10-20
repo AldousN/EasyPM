@@ -287,6 +287,14 @@ export const heroSection = defineType({
       fields: [defineField({ name: 'alt', title: 'Alt Text', type: 'string', validation: (Rule) => Rule.required() })]
     }),
     defineField({
+      name: 'backgroundOverlayOpacity',
+      title: 'Background Overlay Opacity (%)',
+      type: 'number',
+      description: 'Optional uniform black overlay from 0 to 100 percent. Leave blank to use the standard gradient overlay.',
+      fieldset: 'layout',
+      validation: (Rule) => Rule.min(0).max(100)
+    }),
+    defineField({
       name: 'layoutStyle',
       title: 'Layout Style',
       type: 'string',

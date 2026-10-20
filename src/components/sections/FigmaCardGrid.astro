@@ -44,7 +44,7 @@ const imageUrl = (image: NonNullable<ProcessSection['steps'][number]['image']>, 
               <h3>{titleCaseHeading(title)}</h3>
             </div>
             {card.description?.length ? <div class="figma-card-description" set:html={portableTextToHtml(card.description)} /> : null}
-            {isPhoto && <span class="figma-card-arrow" aria-hidden="true">→</span>}
+            {isPhoto && <span class="figma-card-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m14 5 7 7-7 7M21 12H3" /></svg></span>}
           </div>
         </li>;
       })}
@@ -90,12 +90,13 @@ const imageUrl = (image: NonNullable<ProcessSection['steps'][number]['image']>, 
   .figma-cards-photo .figma-card-media img { position: absolute; inset: 0; display: block; width: 100%; height: 100%; max-width: none; object-fit: cover; object-position: center; border-radius: 23px 23px 0 0; transition: transform 500ms ease-out; }
   .figma-cards-photo .figma-card:is(:hover, :focus-within) .figma-card-media img { transform: scale(1.05); }
   .figma-card-copy { padding: 18px 20px 24px; text-align: center; }
-  .figma-cards-photo .figma-card-copy { display: flex; min-height: 112px; flex: 1; flex-direction: column; align-items: center; justify-content: center; gap: 11px; padding: 20px 24px; border-radius: 0 0 23px 23px; background: #0f172a; color: #fff; text-align: center; }
+  .figma-cards-photo .figma-card-copy { display: flex; min-height: 112px; flex: 1; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 20px; border-top: 1px solid #f1f5f9; border-radius: 0 0 23px 23px; background: #f8fafc; color: #0f172a; text-align: center; }
   .figma-card h3 { margin: 0 0 9px; font: 700 clamp(17px, 1.55vw, 21px)/1.18 var(--font-heading); }
-  .figma-cards-photo .figma-card h3 { margin: 0; color: #fff; font-weight: 700; font-size: clamp(14px, 1.2vw, 16px); letter-spacing: .08em; line-height: 1.2; text-transform: uppercase; }
-  .figma-cards-photo .figma-card-arrow { display: grid; width: 30px; height: 30px; place-items: center; border: 1px solid #ffffff4d; border-radius: 50%; color: var(--purple-soft); font: 700 19px/1 var(--font-body); transition: transform 200ms ease-out, border-color 200ms ease-out; }
-  .figma-cards-photo .figma-card:is(:hover, :focus-within) .figma-card-arrow { transform: translateX(4px); border-color: var(--purple-soft); }
-  .figma-cards-photo .figma-card-description { color: #d5d9e3; text-transform: none; }
+  .figma-cards-photo .figma-card h3 { margin: 0; color: #0f172a; font-weight: 700; font-size: 14px; letter-spacing: .08em; line-height: 1.2; text-transform: uppercase; }
+  .figma-cards-photo .figma-card-arrow { display: grid; width: 32px; height: 32px; flex: none; place-items: center; border-radius: 50%; background: #7c3aed; color: #fff; box-shadow: var(--button-shadow-sm); transition: transform 200ms ease-out; }
+  .figma-cards-photo .figma-card-arrow svg { width: 16px; height: 16px; }
+  .figma-cards-photo .figma-card:is(:hover, :focus-within) .figma-card-arrow { transform: translateX(4px); }
+  .figma-cards-photo .figma-card-description { color: #475569; text-transform: none; }
   .figma-cards-dark .figma-cards-heading h2 { color: #fff; }
   .figma-cards-dark .figma-cards-highlight { color: var(--purple-highlight-dark); text-decoration: none; border-bottom: 0; }
   .figma-cards-dark .figma-cards-heading p { color: #e5e5e5; }
@@ -113,6 +114,8 @@ const imageUrl = (image: NonNullable<ProcessSection['steps'][number]['image']>, 
   @media (min-width: 1024px) {
     .figma-cards-photo { padding-block: 96px; }
     .figma-cards-photo .figma-cards-heading { margin-bottom: 56px; }
+    .figma-cards-photo .figma-card-copy { padding: 24px; }
+    .figma-cards-photo .figma-card h3 { font-size: 16px; }
   }
   @media (max-width: 900px) { .figma-cards-grid.columns-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
   @media (max-width: 680px) {

@@ -73,7 +73,11 @@ async function convert(value, path = '', parentType = '') {
   if (typeof value.url === 'string' && value.url.startsWith('/images/')) {
     const file = resolve(projectRoot, 'public', value.url.slice(1));
     if (!existsSync(file)) throw new Error(`Missing local Figma asset: ${file}`);
-    if (dryRun) return { _type: 'image', alt: value.alt || basename(file), asset: { _type: 'reference', _ref: `dry-run:${basename(file)}` } };
+    const framing = {
+      ...(value.crop ? { crop: { ...value.crop, _type: 'sanity.imageCrop' } } : {}),
+      ...(value.hotspot ? { hotspot: { ...value.hotspot, _type: 'sanity.imageHotspot' } } : {}),
+    };
+    if (dryRun) return { _type: 'image', alt: value.alt || basename(file), ...framing, asset: { _type: 'reference', _ref: `dry-run:${basename(file)}` } };
     if (!uploaded.has(file)) {
       const filename = basename(file);
       const existing = await client.fetch('*[_type == "sanity.imageAsset" && originalFilename == $filename][0]._id', { filename });
@@ -85,7 +89,7 @@ async function convert(value, path = '', parentType = '') {
         console.log(`Uploaded ${filename}`);
       }
     }
-    return { _type: 'image', alt: value.alt || basename(file), asset: { _type: 'reference', _ref: uploaded.get(file) } };
+    return { _type: 'image', alt: value.alt || basename(file), ...framing, asset: { _type: 'reference', _ref: uploaded.get(file) } };
   }
   const type = value._type || parentType;
   const entries = await Promise.all(Object.entries(value).map(async ([field, entry]) => [field, await convert(entry, path ? `${path}.${field}` : field, type)]));

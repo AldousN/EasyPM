@@ -54,6 +54,7 @@ const PAGE_BY_SLUG_QUERY = groq`
         mediaType,
         bannerSize,
         videoUrl,
+        backgroundOverlayOpacity,
         backgroundImage ${IMAGE_FRAGMENT},
         sideImage ${IMAGE_FRAGMENT},
         sideImageSize,

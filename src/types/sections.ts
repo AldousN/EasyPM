@@ -46,6 +46,7 @@ export type HeroSection = BaseSection & {
   mediaType?: 'image' | 'video';
   bannerSize?: 'standard' | 'compact';
   videoUrl?: string;
+  backgroundOverlayOpacity?: number;
   backgroundImage?: {
     url?: string;
     alt?: string;

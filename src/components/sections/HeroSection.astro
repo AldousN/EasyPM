@@ -34,6 +34,12 @@ import { normalizeInternalHref } from "../../lib/links";
 import { EASYPM_FALLBACK_VIDEO_URL, getYouTubeEmbedUrl } from '../../lib/youtube';
 
 const props = Astro.props as HeroSection;
+const overlayOpacity = typeof props.backgroundOverlayOpacity === 'number' && Number.isFinite(props.backgroundOverlayOpacity)
+  ? Math.min(100, Math.max(0, props.backgroundOverlayOpacity)) / 100
+  : undefined;
+const backgroundOverlay = overlayOpacity === undefined
+  ? undefined
+  : `linear-gradient(rgba(0, 0, 0, ${overlayOpacity}), rgba(0, 0, 0, ${overlayOpacity}))`;
 // Keep the rendered background in sync with the optimized URL used by the
 // page-level preload. Sanity sources are served as appropriately sized WebP;
 // local preview assets already point to their optimized WebP files.
@@ -143,7 +149,7 @@ const hasFigmaMedia = Boolean(figmaVideoEmbedUrl || figmaVideoImage);
 ---
 
 {props.visualVariant === 'figmaHeader' ? (
-  <section class={`figma-hero ${hasFigmaMedia || props.layoutStyle === 'twoColumn' ? '' : 'figma-hero--solo'} ${props.bannerSize === 'compact' ? 'figma-hero--compact' : ''}`} style={backgroundImageUrl ? `--figma-hero-background:url("${backgroundImageUrl}")` : undefined}>
+  <section class={`figma-hero ${hasFigmaMedia || props.layoutStyle === 'twoColumn' ? '' : 'figma-hero--solo'} ${props.bannerSize === 'compact' ? 'figma-hero--compact' : ''}`} style={{ '--figma-hero-background': backgroundImageUrl ? `url("${backgroundImageUrl}")` : undefined, '--hero-overlay': backgroundOverlay }}>
     <div class="figma-hero-inner grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
       <div class="figma-hero-copy">
         {props.subtitle && <p class="figma-hero-eyebrow">{titleCaseHeading(props.subtitle)}</p>}
@@ -185,7 +191,7 @@ const hasFigmaMedia = Boolean(figmaVideoEmbedUrl || figmaVideoImage);
 ) : (
 <section
   class={`hero-v5 ${backgroundImageUrl ? 'has-background' : ''}`}
-  style={backgroundImageUrl ? `--hero-background: url("${backgroundImageUrl}")` : undefined}
+  style={{ '--hero-background': backgroundImageUrl ? `url("${backgroundImageUrl}")` : undefined, '--hero-overlay': backgroundOverlay }}
 >
   <div class="hero-v5-wrap">
     <div class={`hero-v5-grid ${hasSide ? "with-side" : "no-side"}`}>
@@ -316,7 +322,7 @@ const hasFigmaMedia = Boolean(figmaVideoEmbedUrl || figmaVideoImage);
     position: absolute;
     inset: 0;
     z-index: -1;
-    background: linear-gradient(90deg, rgba(0, 0, 0, .80), rgba(0, 0, 0, .52) 52%, rgba(0, 0, 0, .22));
+    background: var(--hero-overlay, linear-gradient(90deg, rgba(0, 0, 0, .80), rgba(0, 0, 0, .52) 52%, rgba(0, 0, 0, .22)));
   }
   .figma-hero--compact { min-height: 360px; padding: 56px 0; }
   .figma-hero--compact .figma-hero-inner { width: min(calc(100% - 2 * var(--site-gutter)), var(--site-content-width)); }
@@ -373,7 +379,7 @@ const hasFigmaMedia = Boolean(figmaVideoEmbedUrl || figmaVideoImage);
   @media (min-width: 1024px) { .figma-hero-media { max-width: none; } }
   @media (max-width: 1023px) { .figma-hero-inner { grid-template-columns: 1fr; } }
   @media (max-width: 767px) {
-    .figma-hero::before { background: linear-gradient(180deg, rgba(0, 0, 0, .76), rgba(0, 0, 0, .58) 68%, rgba(0, 0, 0, .38)); }
+    .figma-hero::before { background: var(--hero-overlay, linear-gradient(180deg, rgba(0, 0, 0, .76), rgba(0, 0, 0, .58) 68%, rgba(0, 0, 0, .38))); }
     .figma-hero { min-height: 0; padding: 64px 0 118px; }
     .figma-hero.figma-hero--compact { min-height: 0; padding: 48px 0; }
     .figma-hero-inner { grid-template-columns: 1fr; gap: 40px; }
@@ -412,7 +418,7 @@ const hasFigmaMedia = Boolean(figmaVideoEmbedUrl || figmaVideoImage);
     filter: none;
     opacity: 1;
     background:
-      linear-gradient(90deg, rgba(20, 20, 20, .82) 0%, rgba(20, 20, 20, .58) 48%, rgba(20, 20, 20, .25) 100%),
+      var(--hero-overlay, linear-gradient(90deg, rgba(20, 20, 20, .82) 0%, rgba(20, 20, 20, .58) 48%, rgba(20, 20, 20, .25) 100%)),
       var(--hero-background) center / cover no-repeat;
   }
 
