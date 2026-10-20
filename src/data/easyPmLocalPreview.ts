@@ -89,7 +89,8 @@ const pages: Record<string, PageData> = {
         mediaType: 'video',
         videoUrl: 'https://www.youtube.com/embed/PH3786NxmIE',
         bullets: ['Locally owned', 'Residential and commercial service', 'Discreet approach'],
-        backgroundImage: { url: '/images/easypm-home-hero.webp', alt: 'Pest professional in protective gear applying a treatment outside a home' },
+        backgroundImage: { url: '/images/home-hero-technician-spraying.jpg', alt: 'Pest management technician applying exterior property treatment' },
+        backgroundOverlayOpacity: 75,
       },
       {
         _type: 'serviceGridSection',
@@ -355,7 +356,7 @@ export const easyPmLocalPreviewSettings = {
   footerCtaHeading: 'FREE K-9 BUG INSPECTION',
   footerCtaButtonLabel: 'Contact',
   footerCtaButtonLink: '/contact/',
-  footerBannerImage: { url: '/images/easypm-k9-banner-figma.webp', alt: 'K9 banner photo from the EasyPM Figma design' },
+  footerBannerImage: { url: '/images/k9-inspection-dogs-banner.jpg', alt: 'K-9 inspection dogs lying on grass' },
   footerGradientImage: { url: '/images/easypm-cta-gradient-clean-figma.webp', alt: 'Purple gradient from the EasyPM Figma call-to-action banner' },
   footerLinks: [
     { label: 'Home', href: '/' }, { label: 'Services', href: '/services/' },

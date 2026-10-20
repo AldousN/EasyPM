@@ -127,6 +127,7 @@ const navigationItems = await convert(easyPmLocalPreviewSettings.navigationItems
     { label: 'Termite Control', href: '/services/termite-control/' },
   ],
 } : item), 'navigationItems', 'globalSettings');
+const footerBannerImage = await convert(easyPmLocalPreviewSettings.footerBannerImage, 'footerBannerImage', 'globalSettings');
 if (!dryRun) {
   await client.patch('global-settings').set({
     navigationItems,
@@ -135,6 +136,7 @@ if (!dryRun) {
     footerCtaHeading: easyPmLocalPreviewSettings.footerCtaHeading,
     footerCtaButtonLabel: easyPmLocalPreviewSettings.footerCtaButtonLabel,
     footerCtaButtonLink: easyPmLocalPreviewSettings.footerCtaButtonLink,
+    footerBannerImage,
     footerLinks: await convert(easyPmLocalPreviewSettings.footerLinks, 'footerLinks', 'globalSettings'),
   }).unset(['footerCtaText', 'footerCtaSecondaryButtonLabel', 'footerCtaSecondaryButtonLink']).commit();
   if (!settingsOnly) {

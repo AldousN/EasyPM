@@ -84,7 +84,7 @@ const footerLocation = locationLabel ? `${locationLabel} and surrounding areas` 
 const mapEmbedUrl = locationLabel
   ? `https://www.google.com/maps?q=${encodeURIComponent(locationLabel)}&output=embed`
   : undefined;
-const footerBannerUrl = optimizeImageUrl(settings?.footerBannerImage?.url, { width: 2000, height: 420, quality: 78, format: 'webp', fit: 'crop' });
+const footerBannerUrl = optimizeImageUrl(settings?.footerBannerImage?.url, { width: 2000, quality: 78, format: 'webp', fit: 'max' });
 const canonicalHref = buildCanonicalUrl({
   pathname: Astro.url.pathname,
   override: canonicalUrl,
@@ -199,7 +199,11 @@ const pageSchema = {
     <main id="main-content"><slot /></main>
     <footer class="site-footer">
       {(settings?.footerCtaHeading || settings?.footerCtaText || settings?.footerCtaButtonLabel) && (
-        <section class={`footer-cta ${footerBannerUrl ? 'has-banner-image' : ''}`} style={footerBannerUrl ? `--footer-banner-image:url("${footerBannerUrl}")` : undefined} aria-label={settings?.footerCtaHeading}>
+        <section class={`footer-cta ${footerBannerUrl ? 'has-banner-image' : ''}`} aria-label={settings?.footerCtaHeading}>
+          {footerBannerUrl && <>
+            <img class="footer-cta-image" src={footerBannerUrl} alt={settings?.footerBannerImage?.alt || ''} loading="lazy" decoding="async" />
+            <div class="footer-cta-overlay" aria-hidden="true"></div>
+          </>}
           <div class="footer-cta-inner">
             <div>
               {settings?.footerCtaHeading && <h2>{titleCaseHeading(settings.footerCtaHeading)}</h2>}
@@ -372,17 +376,31 @@ const pageSchema = {
   .header-call:active, .mobile-call:active, .footer-cta-button:active { transform: scale(.98); box-shadow: var(--button-shadow-sm); }
   .mobile-menu { display: none; }
   .site-footer { background: #fff; }
-  .footer-cta { background: #292929; color: #fff; }
-  .footer-cta.has-banner-image { background-image: linear-gradient(90deg, rgba(0, 0, 0, .78), rgba(0, 0, 0, .30) 62%, rgba(0, 0, 0, .45)), var(--footer-banner-image); background-position: center; background-size: cover; }
-  .footer-cta-inner { width: min(calc(100% - 2 * var(--site-gutter)), var(--site-content-width)); min-height: 148px; margin: auto; padding: 24px 0; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+  .footer-cta { position: relative; isolation: isolate; overflow: hidden; margin: 0; background: #0f172a; color: #fff; }
+  .footer-cta-image { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; }
+  .footer-cta-overlay { position: absolute; inset: 0; background: rgba(0, 0, 0, .5); }
+  .footer-cta-inner { position: relative; z-index: 1; width: min(calc(100% - 2 * var(--site-gutter)), var(--site-content-width)); margin: auto; padding: 48px 0; display: flex; flex-direction: column; align-items: center; justify-content: space-between; gap: 24px; text-align: center; }
   .footer-cta-inner > div:first-child { min-width: 0; max-width: 700px; }
   .footer-cta-actions { display: flex; align-items: center; justify-content: flex-end; gap: 12px; flex-shrink: 0; }
-  .footer-cta-actions .footer-cta-button { min-width: 180px; min-height: 52px; white-space: nowrap; }
+  .footer-cta-actions .footer-cta-button { min-height: 48px; padding: 12px 32px; border-radius: 999px; background: var(--purple-primary); color: #fff; font-size: 14px; font-weight: 700; line-height: 1.5; text-decoration: none; white-space: nowrap; flex-shrink: 0; }
+  .footer-cta-actions .footer-cta-button:is(:hover, :focus-visible) { background: var(--purple-hover); color: #fff; }
+  .footer-cta-actions .footer-cta-button:focus-visible { outline: 3px solid #fff; outline-offset: 4px; }
+  .footer-cta-actions .footer-cta-button:active { transform: scale(.95); }
   @media (prefers-reduced-motion: reduce) {
     .header-call, .mobile-call, .footer-cta-button { transition: none; }
+    .footer-cta-actions .footer-cta-button:is(:hover, :focus-visible, :active) { transform: none; }
   }
-  .footer-cta h2 { margin: 0; color: #fff; font: 700 clamp(25px, 2.6vw, 38px)/1.15 var(--font-heading); }
+  .footer-cta h2 { margin: 0; color: #fff; font: 800 24px/1.15 var(--font-heading); letter-spacing: -.025em; }
   .footer-cta p { margin: 7px 0 0; color: #fff; font-size: 14px; }
+  @media (min-width: 640px) {
+    .footer-cta-inner { flex-direction: row; text-align: left; }
+    .footer-cta h2 { font-size: 30px; }
+  }
+  @media (min-width: 1024px) {
+    .footer-cta-inner { padding-block: 64px; }
+    .footer-cta h2 { font-size: 36px; }
+    .footer-cta-actions .footer-cta-button { font-size: 16px; }
+  }
   .footer-main { width: min(calc(100% - 2 * var(--site-gutter)), var(--site-content-width)); margin: auto; padding: 50px 0 58px; display: grid; grid-template-columns: minmax(190px, 1.35fr) minmax(120px, .75fr) minmax(145px, 1fr) minmax(140px, 1fr) minmax(230px, 1.35fr); align-items: start; gap: clamp(20px, 2.7vw, 52px); color: #292929; }
   .footer-brand-block { min-width: 0; }
   .footer-brand { min-width: 0; margin-bottom: 12px; }
@@ -450,10 +468,6 @@ const pageSchema = {
     .mobile-call { margin-top: 6px; }
   }
   @media (prefers-reduced-motion: reduce) { .mobile-menu[open]::before, .mobile-menu summary span, .mobile-menu nav, .mobile-submenu, .mobile-services[data-open] .mobile-submenu { transition: none; } }
-  @media (max-width: 900px) {
-    .footer-cta-inner { align-items: flex-start; flex-direction: column; }
-    .footer-cta-actions { justify-content: flex-start; }
-  }
   @media (max-width: 600px) {
     .site-header-inner { padding-block: 7px; }
     .brand-logo { width: 150px; }
@@ -462,8 +476,5 @@ const pageSchema = {
     .footer-main { padding-block: 36px; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 30px 18px; }
     .footer-brand-block, .footer-map { grid-column: 1 / -1; }
     .footer-map { width: 100%; max-width: none; }
-    .footer-cta-inner { align-items: flex-start; flex-direction: column; padding-block: 24px; }
-    .footer-cta-actions { width: 100%; align-items: stretch; flex-direction: column; }
-    .footer-cta-actions .footer-cta-button { width: 100%; white-space: normal; }
   }
 </style>
