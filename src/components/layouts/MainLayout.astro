@@ -1,6 +1,7 @@
 ---
 import criticalCss from "../../styles/critical.css?inline";
 import "../../styles/global.css";
+import "../../styles/motion.css";
 import { buildCanonicalUrl, PREFERRED_SITE_ORIGIN } from "../../lib/canonical";
 import { fetchGlobalSettings, type SiteSettings } from "../../lib/queries/globalSettings";
 import { normalizeInternalHref } from "../../lib/links";
@@ -244,6 +245,9 @@ const pageSchema = {
         <small>© {new Date().getFullYear()} {brandName}. All rights reserved.</small>
       </div>
     </footer>
+    <script>
+      import '../../lib/siteMotion';
+    </script>
     <script is:inline>
       document.querySelectorAll('.mobile-menu').forEach((menu) => {
         const trigger = menu.querySelector('summary');
@@ -365,7 +369,7 @@ const pageSchema = {
   .nav-dropdown-trigger { display: inline-flex; align-items: center; gap: 5px; border: 0; background: transparent; cursor: pointer; }
   .nav-dropdown-trigger svg, .mobile-services-trigger svg { flex: none; transition: transform 200ms ease-out; }
   .nav-dropdown[data-open] .nav-dropdown-trigger svg, .mobile-services[data-open] .mobile-services-trigger svg { transform: rotate(180deg); }
-  .nav-submenu { position: absolute; top: 100%; left: -18px; z-index: 55; min-width: 240px; padding-top: 8px; visibility: hidden; opacity: 0; pointer-events: none; transform: translateY(-4px); transition: opacity 150ms ease-out, transform 150ms ease-out, visibility 150ms; }
+  .nav-submenu { position: absolute; top: 100%; left: -18px; z-index: 55; min-width: 240px; padding-top: 8px; visibility: hidden; opacity: 0; pointer-events: none; transform: translateY(-4px); transition: opacity 200ms ease-out, transform 200ms ease-out, visibility 200ms; }
   .nav-dropdown[data-open] .nav-submenu { visibility: visible; opacity: 1; pointer-events: auto; transform: translateY(0); }
   .nav-submenu-panel { display: grid; padding: 8px; border: 1px solid #e4dcec; border-radius: 12px; background: #fff; box-shadow: 0 14px 28px rgba(35, 20, 56, .16); }
   .desktop-nav .nav-submenu a { display: block; padding: 12px 14px; border-radius: 8px; color: #333038; font: 600 14px var(--font-heading); transition: transform 200ms ease-out, background-color 200ms ease-out, color 200ms ease-out; }

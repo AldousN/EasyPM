@@ -330,7 +330,7 @@ const rightColumnFaqs = faqs.filter((_, index) => index % 2 === 1);
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    transition: transform 280ms cubic-bezier(0.2, 0.8, 0.2, 1), background 220ms ease;
+    transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1), background 220ms ease;
   }
 
   .bbg-faq-chev svg {
@@ -409,6 +409,19 @@ const rightColumnFaqs = faqs.filter((_, index) => index % 2 === 1);
   }
 
   /* === Subtle open animation ====================================== */
+  /* Native disclosure interpolation adds no wrappers or fixed answer limits.
+     Unsupported browsers retain the transform/opacity answer animation below. */
+  @supports (interpolate-size: allow-keywords) and selector(details::details-content) {
+    @media (prefers-reduced-motion: no-preference) {
+      .bbg-faq-item { interpolate-size: allow-keywords; }
+      .bbg-faq-item::details-content {
+        block-size: 0;
+        overflow: clip;
+        transition: block-size 300ms cubic-bezier(0.16, 1, 0.3, 1), content-visibility 300ms allow-discrete;
+      }
+      .bbg-faq-item[open]::details-content { block-size: auto; }
+    }
+  }
   @media (prefers-reduced-motion: no-preference) {
     .bbg-faq-item[open] .bbg-faq-a {
       animation: bbg-faq-fade 320ms cubic-bezier(0.2, 0.8, 0.2, 1);

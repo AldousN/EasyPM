@@ -440,7 +440,7 @@ const sectionTopHref = normalizeInternalHref(props.ctaLink);
     border: 1px solid var(--purple-soft);
     box-shadow: 0 25px 40px -12px rgba(15, 23, 42, 0.08);
     transition:
-      transform 240ms cubic-bezier(0.2, 0.8, 0.2, 1),
+      transform 300ms cubic-bezier(0.16, 1, 0.3, 1),
       box-shadow 240ms ease,
       border-color 240ms ease;
     height: 100%;
@@ -481,8 +481,8 @@ const sectionTopHref = normalizeInternalHref(props.ctaLink);
     gap: 0;
   }
 
-  .bbg-icon-card.is-card:hover {
-    transform: translateY(-2px);
+  .bbg-icon-card.is-card:is(:hover, :focus-within) {
+    transform: translate3d(0, -6px, 0);
     box-shadow: 0 35px 70px -14px rgba(15, 23, 42, 0.15);
     border-color: rgba(15, 23, 42, 0.12);
   }
