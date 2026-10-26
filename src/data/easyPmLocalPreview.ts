@@ -352,7 +352,6 @@ export const easyPmLocalPreviewSettings = {
     { label: 'Service Area', href: '/service-area/' },
     { label: 'About Us', href: '/about-us/' },
     { label: 'Blog', href: '/blog/' },
-    { label: 'Contact', href: '/contact/' },
   ],
   headerCtaLabel: 'Contact',
   headerCtaLink: '/contact/',

@@ -74,6 +74,9 @@ const scopedNavigation = pendingServicesEnabled
       children: item.children?.filter((child) => !isPendingServiceHref(child.href)),
     }));
 const headerCtaHref = normalizeInternalHref(settings?.headerCtaLink);
+const headerNavigation = scopedNavigation.filter((item) =>
+  !settings?.headerCtaLabel || !headerCtaHref || item.href !== headerCtaHref
+);
 const footerLinks = (settings?.footerLinks ?? [])
   .map((item) => ({ label: item.label?.trim(), href: normalizeInternalHref(item.href) }))
   .filter((item): item is { label: string; href: string } => Boolean(item.label && item.href))
@@ -160,7 +163,7 @@ const pageSchema = {
           {brandLogo ? <img class="brand-logo" src={brandLogo} alt={logoAlt} width="240" height="49" /> : <span class="brand-wordmark">{brandName}</span>}
         </a>
         <nav class="desktop-nav" aria-label="Primary navigation">
-          {scopedNavigation.map((item) => item.children?.length ? (
+          {headerNavigation.map((item) => item.children?.length ? (
             <div class="nav-dropdown" data-nav-dropdown>
               <button class="nav-dropdown-trigger" type="button" aria-expanded="false" aria-controls="services-desktop-submenu" data-active={item.children.some((child) => Astro.url.pathname === child.href) ? 'true' : undefined}>
                 <span>{item.label}</span>
@@ -180,7 +183,7 @@ const pageSchema = {
         <details class="mobile-menu">
           <summary aria-label="Open navigation" aria-controls="mobile-navigation"><span></span><span></span><span></span></summary>
           <nav id="mobile-navigation" aria-label="Mobile navigation">
-            {scopedNavigation.map((item) => item.children?.length ? (
+            {headerNavigation.map((item) => item.children?.length ? (
               <div class="mobile-services" data-mobile-services>
                 <button class="mobile-services-trigger" type="button" aria-expanded="false" aria-controls="services-mobile-submenu" data-active={item.children.some((child) => Astro.url.pathname === child.href) ? 'true' : undefined}>
                   <span>{item.label}</span>
@@ -191,6 +194,7 @@ const pageSchema = {
                 </div>
               </div>
             ) : <a href={item.href} aria-current={Astro.url.pathname === item.href ? "page" : undefined}>{item.label}</a>)}
+            {settings?.headerCtaLabel && headerCtaHref && <a class="mobile-call" href={headerCtaHref}>{settings.headerCtaLabel}</a>}
             {phoneLabel && <a class="mobile-call" href={phoneHref}>Call {phoneLabel}</a>}
           </nav>
         </details>
